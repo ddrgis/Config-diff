@@ -25,3 +25,8 @@ test('CommandParser defines -V option', () => {
 
   expect(options.find(opt => opt.short === '-V').short).toBe('-V');
 });
+
+test('CommandParser defines program description', () => {
+  const parser = getCommandParser();
+  expect(parser._description).toBe('Compares two configuration files and shows a difference.');
+});
