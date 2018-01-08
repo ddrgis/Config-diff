@@ -1,8 +1,8 @@
 {
   "name": "gendiff-011235",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "My gen diff cli project",
-  "main": "src/index.js",
+  "main": "src/gendiff.js",
   "bin": {
     "gendiff": "dist/bin/gendiff.js"
   },
@@ -41,6 +41,7 @@
     "regenerator-runtime": "^0.11.1"
   },
   "dependencies": {
-    "commander": "^2.12.2"
+    "commander": "^2.12.2",
+    "lodash": "^4.17.4"
   }
 }

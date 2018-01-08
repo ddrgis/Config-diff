@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import parseCommand from '../commandParser';
-import start from '..';
+import genDiff from '../gendiff';
 
 console.log(process.argv);
-start(parseCommand(process.argv));
+genDiff(parseCommand(process.argv));
