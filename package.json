@@ -1,13 +1,17 @@
 {
   "name": "gendiff-011235",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "My gen diff cli project",
-  "main": "src/bin/gendiff.js",
+  "main": "src/index.js",
+  "bin": {
+    "gendiff": "dist/bin/gendiff.js"
+  },
   "scripts": {
     "babel-node": "babel-node",
     "build": "NODE_ENV=production babel src --out-dir dist --source-maps inline",
     "eslint": "./node_modules/.bin/eslint src",
-    "test": "jest"
+    "test": "jest",
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",

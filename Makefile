@@ -12,3 +12,6 @@ lint:
 
 test:
 	npm run test
+
+publish:
+	npm publish
