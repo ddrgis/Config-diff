@@ -12,13 +12,6 @@ test('CommandParser defines -f option', () => {
   expect(options.find(opt => opt.short === '-f').short).toBe('-f');
 });
 
-test('CommandParser defines -h option', () => {
-  const parser = getCommandParser();
-  const options = parser.options;
-
-  expect(options.find(opt => opt.short === '-h').short).toBe('-h');
-});
-
 test('CommandParser defines -V option', () => {
   const parser = getCommandParser();
   const options = parser.options;
