@@ -66,10 +66,14 @@ export const genDiff = (command, firstConfig, secondConfig) => {
 };
 
 export const gendiff = (command, readFile = fs.readFileSync) => {
-  const firstConfigPath = command.args[0];
-  const secondConfigPath = command.args[1];
-  const firstConfig = readFile(new URL(`file://${firstConfigPath}`), 'utf-8');
-  const secondConfig = readFile(new URL(`file://${secondConfigPath}`), 'utf-8');
+  const firstConfigFullPath = command.args[0];
+  const secondConfigFullPath = command.args[1];
+
+  console.log(`Arg[0]: ${command.args[0]}`);
+  console.log(`Arg[1]: ${command.args[1]}`);
+
+  const firstConfig = readFile(new URL(`file://${firstConfigFullPath}`), 'utf-8');
+  const secondConfig = readFile(new URL(`file://${secondConfigFullPath}`), 'utf-8');
 
   return genDiff(command, firstConfig, secondConfig);
 };
