@@ -1,17 +1,32 @@
 import fs from 'fs';
 import path from 'path';
-// import _ from 'lodash';
+import _ from 'lodash';
 
-const genDiff = (firstConfigPath, secondConfigPath) => {
-  console.log(firstConfigPath);
-  console.log(secondConfigPath);
+const readFile = pathToFile => fs.readFileSync(path.join(__dirname, pathToFile), 'utf-8');
 
-  const diffResult = fs.readFileSync(path.join(__dirname, '../__tests__/__fixtures__/diff.json'), 'utf-8');
+const genDiff = (beforeConfigPath, afterConfigPath) => {
+  // const beforeConfig = readFile(beforeConfigPath);
+  // const afterConfig = readFile(afterConfigPath);
+  const beforeConfig = JSON.parse(readFile('../__tests__/__fixtures__/before.json'));
+  const afterConfig = JSON.parse(readFile('../__tests__/__fixtures__/after.json'));
 
-  console.log(diffResult);
-  console.log(JSON.parse(JSON.stringify(diffResult)));
-
-  return {};
+  const leftDiff = _.reduce(beforeConfig, (acc, beforeValue, key) => {
+    const afterValue = afterConfig[key];
+    console.log(`${key}: before: ${beforeValue} after: ${afterValue}`);
+    console.log(acc);
+    if (afterValue === beforeValue) {
+      return { ...acc, [`  ${key}`]: beforeValue };
+    }
+    if (afterValue === undefined) {
+      return { ...acc, [`- ${key}`]: beforeValue };
+    }
+    return { ...acc, [`+ ${key}`]: afterValue, [`- ${key}`]: beforeValue };
+  }, {});
+  const fullDiff = _.reduce(afterConfig, (acc, afterValue, key) => {
+    return beforeConfig[key] === undefined ? { ...acc, [`+ ${key}`]: afterValue } : acc;
+  }, leftDiff);
+  console.log(fullDiff);
+  return JSON.stringify(fullDiff, undefined, '  ');
 };
 
 export default genDiff;
