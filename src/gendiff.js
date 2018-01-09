@@ -9,9 +9,13 @@ export const parse = (json) => {
 };
 
 const isChanged = (before, after) => before !== after;
+const isEdited = ({ previousValue: before, value: after }) =>
+  isChanged(before, after) && before !== null && after !== null;
+const isRemoved = ({ previousValue: before, value: after }) =>
+  isChanged(before, after) && after === null;
 
 export const makeDiff = (beforeAST, afterAST) => {
-  const afterDiff = Object.keys(afterAST).reduce((acc, key) => {
+  const beforeDiff = Object.keys(beforeAST).reduce((acc, key) => {
     const before = _.isNil(beforeAST[key]) ? null : beforeAST[key].value;
     const after = _.isNil(afterAST[key]) ? null : afterAST[key].value;
     return {
@@ -23,15 +27,42 @@ export const makeDiff = (beforeAST, afterAST) => {
       },
     };
   }, {});
-  const missedKeys = Object.keys(beforeAST).filter(key => afterAST[key] === undefined);
+  const missedKeys = Object.keys(afterAST).filter(key => beforeAST[key] === undefined);
   return missedKeys.reduce((acc, key) => ({
     ...acc,
     [key]: {
-      value: null,
+      value: afterAST[key].value,
       isChanged: true,
-      previousValue: beforeAST[key].value,
+      previousValue: null,
     },
-  }), afterDiff);
+  }), beforeDiff);
+};
+
+/* eslint-disable arrow-body-style */
+export const diffToString = (diffAST) => {
+  return Object.keys(diffAST).reduce((acc, key) => {
+    const item = diffAST[key];
+    const { previousValue: before, value: after } = item;
+    if (isEdited(item)) {
+      return acc.concat(`\t+ ${key}: ${after}\n`)
+        .concat(`\t- ${key}: ${before}\n`);
+    }
+    if (isRemoved(item)) {
+      return acc.concat(`\t- ${key}: ${before}\n`);
+    }
+    if (!item.isChanged) {
+      return acc.concat(`\t  ${key}: ${after}\n`);
+    }
+    return acc.concat(`\t+ ${key}: ${after}\n`);
+  }, '{\n').concat('}');
+};
+/* eslint-enable arrow-body-style */
+
+export const genDiff = (command, firstConfig, secondConfig) => {
+  const beforeAST = parse(firstConfig);
+  const afterAST = parse(secondConfig);
+  const diffAST = makeDiff(beforeAST, afterAST);
+  return diffToString(diffAST);
 };
 
 export const gendiff = (command, readFile = fs.readFileSync) => {
@@ -40,10 +71,7 @@ export const gendiff = (command, readFile = fs.readFileSync) => {
   const firstConfig = readFile(new URL(`file://${firstConfigPath}`), 'utf-8');
   const secondConfig = readFile(new URL(`file://${secondConfigPath}`), 'utf-8');
 
-  // const firstParsed = parse(firstConfig);
-  // const secondParsed = parse(secondConfig);
-
-  return firstConfig + secondConfig;
+  return genDiff(command, firstConfig, secondConfig);
 };
 
 export default gendiff;
