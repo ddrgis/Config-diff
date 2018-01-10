@@ -7,26 +7,28 @@ const readFile = pathToFile => fs.readFileSync(path.join(`${process.env.PWD}`, p
 
 const parsers = {
   json: {
-    parse: file => JSON.parse(file),
+    parse: pathToFile => JSON.parse(readFile(pathToFile)),
   },
   yml: {
-    parse: file => yamlParser.safeLoad(file),
+    parse: pathToFile => yamlParser.safeLoad(readFile(pathToFile)),
   },
   yaml: {
-    parse: file => yamlParser.safeLoad(file),
+    parse: pathToFile => yamlParser.safeLoad(readFile(pathToFile)),
   },
 };
+
+const getParseMethod = extension => parsers[extension].parse;
 
 const getExtension = pathToFile => path.extname(pathToFile).slice(1);
 
 const genDiff = (beforeConfigPath, afterConfigPath) => {
   const extension = getExtension(beforeConfigPath);
-  const { parse } = parsers[extension];
-  const beforeConfig = parse(readFile(beforeConfigPath));
-  const afterConfig = parse(readFile(afterConfigPath));
+  const parse = getParseMethod(extension);
+  const parsedBeforeConfig = parse(beforeConfigPath);
+  const parsedAfterConfig = parse(afterConfigPath);
 
-  const diffExpectNewLines = _.reduce(beforeConfig, (acc, beforeValue, key) => {
-    const afterValue = afterConfig[key];
+  const diffExpectNewLines = _.reduce(parsedBeforeConfig, (acc, beforeValue, key) => {
+    const afterValue = parsedAfterConfig[key];
     if (afterValue === beforeValue) {
       return { ...acc, [`  ${key}`]: beforeValue };
     }
@@ -36,8 +38,8 @@ const genDiff = (beforeConfigPath, afterConfigPath) => {
     return { ...acc, [`+ ${key}`]: afterValue, [`- ${key}`]: beforeValue };
   }, {});
   const fullDiff = _.reduce(
-    afterConfig,
-    (acc, afterValue, key) => (beforeConfig[key] === undefined ? { ...acc, [`+ ${key}`]: afterValue } : acc),
+    parsedAfterConfig,
+    (acc, afterValue, key) => (parsedBeforeConfig[key] === undefined ? { ...acc, [`+ ${key}`]: afterValue } : acc),
     diffExpectNewLines,
   );
   return JSON.stringify(fullDiff, undefined, '  ');
