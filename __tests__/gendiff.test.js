@@ -16,7 +16,7 @@ const testInit = (inputFormat) => {
   return {
     beforeConfig: getPathToFixtures(`before.${inputFormat}`),
     afterConfig: getPathToFixtures(`after.${inputFormat}`),
-    resultDiff: readFixtureFile('diff.json'),
+    resultDiff: inputFormat === 'ini' ? readFixtureFile('iniDiff.json') : readFixtureFile('diff.json'),
   }
 }
 
@@ -28,6 +28,12 @@ test('correct json input returns corrent diff json', () => {
 
 test('correct yaml input returns corrent diff json', () => {
   const {beforeConfig, afterConfig, resultDiff} = testInit('yaml');
+
+  expect(genDiff(beforeConfig, afterConfig)).toEqual(resultDiff);
+});
+
+test('correct ini input returns corrent diff json', () => {
+  const {beforeConfig, afterConfig, resultDiff} = testInit('ini');
 
   expect(genDiff(beforeConfig, afterConfig)).toEqual(resultDiff);
 });

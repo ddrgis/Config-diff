@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import _ from 'lodash';
 import yamlParser from 'js-yaml';
+import iniParser from 'ini';
 
 const readFile = pathToFile => fs.readFileSync(path.join(`${process.env.PWD}`, pathToFile), 'utf-8');
 
@@ -14,6 +15,9 @@ const parsers = {
   },
   yaml: {
     parse: pathToFile => yamlParser.safeLoad(readFile(pathToFile)),
+  },
+  ini: {
+    parse: pathToFile => iniParser.parse(readFile(pathToFile)),
   },
 };
 
