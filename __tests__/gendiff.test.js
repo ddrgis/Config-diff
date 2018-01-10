@@ -8,13 +8,13 @@ const readFixtureFile = (fileName) => {
   return fs.readFileSync(path.join(__dirname, `./__fixtures__/${fileName}`), 'utf-8');
 };
 
-const getPathFromRoot = (fileName) => {
-  return `__tests__/__fixtures__/${fileName}`;
+const getPathFromSrc = (fileName) => {
+  return `../__tests__/__fixtures__/${fileName}`;
 };
 
 test('correct json input returns corrent diff json', () => {
-  const beforeConfig = getPathFromRoot('before.json');
-  const afterConfig = getPathFromRoot('after.json');
+  const beforeConfig = getPathFromSrc('before.json');
+  const afterConfig = getPathFromSrc('after.json');
   const resultDiff = readFixtureFile('diff.json');
 
   expect(genDiff(beforeConfig, afterConfig)).toEqual(resultDiff);
