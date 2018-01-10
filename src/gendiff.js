@@ -17,18 +17,20 @@ const parsers = {
   },
 };
 
-const getParseMethod = extension => parsers[extension].parse;
-
 const getExtension = pathToFile => path.extname(pathToFile).slice(1);
 
-const genDiff = (beforeConfigPath, afterConfigPath) => {
-  const extension = getExtension(beforeConfigPath);
-  const parse = getParseMethod(extension);
-  const parsedBeforeConfig = parse(beforeConfigPath);
-  const parsedAfterConfig = parse(afterConfigPath);
+const getParseMethod = (pathToConfig) => {
+  const configExtention = getExtension(pathToConfig);
+  return parsers[configExtention].parse;
+};
 
-  const diffExpectNewLines = _.reduce(parsedBeforeConfig, (acc, beforeValue, key) => {
-    const afterValue = parsedAfterConfig[key];
+const genDiff = (beforeConfigPath, afterConfigPath) => {
+  const parse = getParseMethod(beforeConfigPath);
+  const beforeConfig = parse(beforeConfigPath);
+  const afterConfig = parse(afterConfigPath);
+
+  const diffExpectNewLines = _.reduce(beforeConfig, (acc, beforeValue, key) => {
+    const afterValue = afterConfig[key];
     if (afterValue === beforeValue) {
       return { ...acc, [`  ${key}`]: beforeValue };
     }
@@ -37,9 +39,10 @@ const genDiff = (beforeConfigPath, afterConfigPath) => {
     }
     return { ...acc, [`+ ${key}`]: afterValue, [`- ${key}`]: beforeValue };
   }, {});
+
   const fullDiff = _.reduce(
-    parsedAfterConfig,
-    (acc, afterValue, key) => (parsedBeforeConfig[key] === undefined ? { ...acc, [`+ ${key}`]: afterValue } : acc),
+    afterConfig,
+    (acc, afterValue, key) => (beforeConfig[key] === undefined ? { ...acc, [`+ ${key}`]: afterValue } : acc),
     diffExpectNewLines,
   );
   return JSON.stringify(fullDiff, undefined, '  ');
