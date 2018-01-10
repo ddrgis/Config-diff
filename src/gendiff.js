@@ -17,11 +17,14 @@ const parsers = {
   },
 };
 
+const getExtension = pathToFile => path.extname(pathToFile).slice(1);
+
 const genDiff = (beforeConfigPath, afterConfigPath) => {
-  const extension = path.extname(beforeConfigPath).slice(1);
+  const extension = getExtension(beforeConfigPath);
   const { parse } = parsers[extension];
   const beforeConfig = parse(readFile(beforeConfigPath));
   const afterConfig = parse(readFile(afterConfigPath));
+
   const diffExpectNewLines = _.reduce(beforeConfig, (acc, beforeValue, key) => {
     const afterValue = afterConfig[key];
     if (afterValue === beforeValue) {

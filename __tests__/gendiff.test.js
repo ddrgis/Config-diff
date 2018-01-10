@@ -12,18 +12,22 @@ const getPathToFixtures = (fileName) => {
   return `./__tests__/__fixtures__/${fileName}`;
 };
 
+const testInit = (inputFormat) => {
+  return {
+    beforeConfig: getPathToFixtures(`before.${inputFormat}`),
+    afterConfig: getPathToFixtures(`after.${inputFormat}`),
+    resultDiff: readFixtureFile('diff.json'),
+  }
+}
+
 test('correct json input returns corrent diff json', () => {
-  const beforeConfig = getPathToFixtures('before.json');
-  const afterConfig = getPathToFixtures('after.json');
-  const resultDiff = readFixtureFile('diff.json');
+  const {beforeConfig, afterConfig, resultDiff} = testInit('json');
 
   expect(genDiff(beforeConfig, afterConfig)).toEqual(resultDiff);
 });
 
 test('correct yaml input returns corrent diff json', () => {
-  const beforeConfig = getPathToFixtures('before.yaml');
-  const afterConfig = getPathToFixtures('after.yaml');
-  const resultDiff = readFixtureFile('diff.json');
+  const {beforeConfig, afterConfig, resultDiff} = testInit('yaml');
 
   expect(genDiff(beforeConfig, afterConfig)).toEqual(resultDiff);
 });
