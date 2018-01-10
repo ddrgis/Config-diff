@@ -1,12 +1,29 @@
 import fs from 'fs';
 import path from 'path';
 import _ from 'lodash';
+import yamlParser from 'js-yaml';
 
 const readFile = pathToFile => fs.readFileSync(path.join(`${__dirname}`, pathToFile), 'utf-8');
 
+const parsers = {
+  json: {
+    parser: file => JSON.parse(file),
+  },
+  yml: {
+    parser: file => yamlParser.safeLoad(file),
+  },
+  yaml: {
+    parser: file => yamlParser.safeLoad(file),
+  },
+};
+
 const genDiff = (beforeConfigPath, afterConfigPath) => {
-  const beforeConfig = JSON.parse(readFile(beforeConfigPath));
-  const afterConfig = JSON.parse(readFile(afterConfigPath));
+  const extension = path.extname(beforeConfigPath).slice(1);
+  const parse = parsers[extension].parser;
+
+  const beforeConfig = parse(readFile(beforeConfigPath));
+  const afterConfig = parse(readFile(afterConfigPath));
+  console.log(beforeConfig);
   const diffExpectNewLines = _.reduce(beforeConfig, (acc, beforeValue, key) => {
     const afterValue = afterConfig[key];
     if (afterValue === beforeValue) {
