@@ -19,3 +19,11 @@ test('correct json input returns corrent diff json', () => {
 
   expect(genDiff(beforeConfig, afterConfig)).toEqual(resultDiff);
 });
+
+test('correct yaml input returns corrent diff json', () => {
+  const beforeConfig = getPathFromSrc('before.yaml');
+  const afterConfig = getPathFromSrc('after.yaml');
+  const resultDiff = readFixtureFile('diff.json');
+
+  expect(genDiff(beforeConfig, afterConfig)).toEqual(resultDiff);
+});
