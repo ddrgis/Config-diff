@@ -1,6 +1,6 @@
 {
   "name": "gendiff-011235",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "My gen diff cli project",
   "main": "src/gendiff.js",
   "bin": {

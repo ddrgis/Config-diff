@@ -5,7 +5,7 @@ import path from 'path';
 import genDiff from '../src/gendiff';
 
 const readFixtureFile = (fileName) => {
-  return fs.readFileSync(path.join(__dirname, `./__fixtures__/${fileName}`), 'utf-8');
+  return fs.readFileSync(path.join(__dirname, `./__fixtures__/${fileName}`), 'utf-8').replace(/"/g, '');
 };
 
 const getPathToFixtures = (fileName) => {
@@ -16,7 +16,7 @@ const testInit = (inputFormat) => {
   return {
     beforeConfig: getPathToFixtures(`before.${inputFormat}`),
     afterConfig: getPathToFixtures(`after.${inputFormat}`),
-    resultDiff: inputFormat === 'ini' ? readFixtureFile('iniDiff.json') : readFixtureFile('diff.json'),
+    resultDiff: readFixtureFile('diff.json'),
   }
 }
 

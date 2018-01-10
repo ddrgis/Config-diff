@@ -49,7 +49,7 @@ const genDiff = (beforeConfigPath, afterConfigPath) => {
     (acc, afterValue, key) => (beforeConfig[key] === undefined ? { ...acc, [`+ ${key}`]: afterValue } : acc),
     diffExpectNewLines,
   );
-  return JSON.stringify(fullDiff, undefined, '  ');
+  return JSON.stringify(fullDiff, undefined, '  ').replace(/"/g, '');
 };
 
 export default genDiff;
