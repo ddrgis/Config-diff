@@ -28,11 +28,7 @@ const getParseMethod = (configPath) => {
   return parsers[configExtention].parse;
 };
 
-const genDiff = (firstConfigPath, secondConfigPath) => {
-  const parse = getParseMethod(firstConfigPath);
-  const before = parse(readFile(firstConfigPath));
-  const after = parse(readFile(secondConfigPath));
-
+export const makeDiff = (before, after) => {
   const diffExpectNewLines = _.reduce(before, (acc, beforeValue, key) => {
     const afterValue = after[key];
     if (afterValue === beforeValue) {
@@ -50,6 +46,14 @@ const genDiff = (firstConfigPath, secondConfigPath) => {
     diffExpectNewLines,
   );
   return JSON.stringify(fullDiff, undefined, '  ').replace(/"/g, '');
+};
+
+export const genDiff = (firstConfigPath, secondConfigPath) => {
+  const parse = getParseMethod(firstConfigPath);
+  const before = parse(readFile(firstConfigPath));
+  const after = parse(readFile(secondConfigPath));
+
+  return makeDiff(before, after);
 };
 
 export default genDiff;
