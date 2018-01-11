@@ -13,5 +13,8 @@ lint:
 test:
 	npm run test
 
+watch:
+	sudo npm run test -- --watchAll
+
 publish:
 	npm publish

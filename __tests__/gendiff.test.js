@@ -7,25 +7,25 @@ const readFixtureFile = fileName => fs.readFileSync(path.join(__dirname, `./__fi
 const getPathToFixtures = fileName => `./__tests__/__fixtures__/${fileName}`;
 
 const testInit = inputFormat => ({
-  beforeConfig: getPathToFixtures(`before.${inputFormat}`),
-  afterConfig: getPathToFixtures(`after.${inputFormat}`),
+  firstConfigPath: getPathToFixtures(`before.${inputFormat}`),
+  secondConfigPath: getPathToFixtures(`after.${inputFormat}`),
   resultDiff: readFixtureFile('diff.json'),
 });
 
 test('correct json input returns corrent diff json', () => {
-  const { beforeConfig, afterConfig, resultDiff } = testInit('json');
+  const { firstConfigPath, secondConfigPath, resultDiff } = testInit('json');
 
-  expect(genDiff(beforeConfig, afterConfig)).toEqual(resultDiff);
+  expect(genDiff(firstConfigPath, secondConfigPath)).toEqual(resultDiff);
 });
 
 test('correct yaml input returns corrent diff json', () => {
-  const { beforeConfig, afterConfig, resultDiff } = testInit('yaml');
+  const { firstConfigPath, secondConfigPath, resultDiff } = testInit('yaml');
 
-  expect(genDiff(beforeConfig, afterConfig)).toEqual(resultDiff);
+  expect(genDiff(firstConfigPath, secondConfigPath)).toEqual(resultDiff);
 });
 
 test('correct ini input returns corrent diff json', () => {
-  const { beforeConfig, afterConfig, resultDiff } = testInit('ini');
+  const { firstConfigPath, secondConfigPath, resultDiff } = testInit('ini');
 
-  expect(genDiff(beforeConfig, afterConfig)).toEqual(resultDiff);
+  expect(genDiff(firstConfigPath, secondConfigPath)).toEqual(resultDiff);
 });
