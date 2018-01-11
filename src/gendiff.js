@@ -8,33 +8,33 @@ const readFile = pathToFile => fs.readFileSync(path.join(`${process.env.PWD}`, p
 
 const parsers = {
   json: {
-    parse: pathToFile => JSON.parse(readFile(pathToFile)),
+    parse: data => JSON.parse(data),
   },
   yml: {
-    parse: pathToFile => yamlParser.safeLoad(readFile(pathToFile)),
+    parse: data => yamlParser.safeLoad(data),
   },
   yaml: {
-    parse: pathToFile => yamlParser.safeLoad(readFile(pathToFile)),
+    parse: data => yamlParser.safeLoad(data),
   },
   ini: {
-    parse: pathToFile => iniParser.parse(readFile(pathToFile)),
+    parse: data => iniParser.parse(data),
   },
 };
 
 const getExtension = pathToFile => path.extname(pathToFile).slice(1);
 
-const getParseMethod = (pathToConfig) => {
-  const configExtention = getExtension(pathToConfig);
+const getParseMethod = (configPath) => {
+  const configExtention = getExtension(configPath);
   return parsers[configExtention].parse;
 };
 
-const genDiff = (beforeConfigPath, afterConfigPath) => {
-  const parse = getParseMethod(beforeConfigPath);
-  const beforeConfig = parse(beforeConfigPath);
-  const afterConfig = parse(afterConfigPath);
+const genDiff = (firstConfigPath, secondConfigPath) => {
+  const parse = getParseMethod(firstConfigPath);
+  const before = parse(readFile(firstConfigPath));
+  const after = parse(readFile(secondConfigPath));
 
-  const diffExpectNewLines = _.reduce(beforeConfig, (acc, beforeValue, key) => {
-    const afterValue = afterConfig[key];
+  const diffExpectNewLines = _.reduce(before, (acc, beforeValue, key) => {
+    const afterValue = after[key];
     if (afterValue === beforeValue) {
       return { ...acc, [`  ${key}`]: beforeValue };
     }
@@ -45,8 +45,8 @@ const genDiff = (beforeConfigPath, afterConfigPath) => {
   }, {});
 
   const fullDiff = _.reduce(
-    afterConfig,
-    (acc, afterValue, key) => (beforeConfig[key] === undefined ? { ...acc, [`+ ${key}`]: afterValue } : acc),
+    after,
+    (acc, afterValue, key) => (before[key] === undefined ? { ...acc, [`+ ${key}`]: afterValue } : acc),
     diffExpectNewLines,
   );
   return JSON.stringify(fullDiff, undefined, '  ').replace(/"/g, '');

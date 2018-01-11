@@ -3,8 +3,5 @@ import parseCommand from '../commandParser';
 import genDiff from '../gendiff';
 
 const command = parseCommand(process.argv);
-
-const firstConfigPath = command.args[0];
-const secondConfigPath = command.args[1];
-
+const [firstConfigPath, secondConfigPath] = command.args;
 console.log(genDiff(firstConfigPath, secondConfigPath));
