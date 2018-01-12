@@ -3,8 +3,6 @@ import path from 'path';
 import _ from 'lodash';
 import yamlParser from 'js-yaml';
 import iniParser from 'ini';
-import { create } from 'domain';
-import { start } from 'repl';
 
 const readFile = pathToFile => fs.readFileSync(path.resolve(pathToFile), 'utf-8');
 
@@ -30,11 +28,10 @@ const getParseMethod = (configPath) => {
   return parsers[configExtention].parse;
 };
 
-const createAST = (object) => {
-  return _.reduce(object, (acc, value, key) => {
-    return { ...acc, [key]: { value, status: null, children: {} } };
-  }, {});
-};
+const createAST = object => _.reduce(
+  object,
+  (acc, value, key) => ({ ...acc, [key]: { value, status: null, children: {} } }), {},
+);
 
 const diffAST = (beforeChangingAST, afterChangingAST) => {
   const withoutAddedLines = _.reduce(beforeChangingAST, (acc, before, key) => {
