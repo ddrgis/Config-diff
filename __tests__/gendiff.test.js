@@ -12,19 +12,19 @@ const testInit = inputFormat => ({
   resultDiff: readFixtureFile('flatConfigs/diff.txt'),
 });
 
-test('correct json input returns corrent diff json', () => {
+test('correct pathToJson input returns corrent diff json', () => {
   const { firstConfigPath, secondConfigPath, resultDiff } = testInit('json');
 
   expect(genDiff(firstConfigPath, secondConfigPath)).toEqual(resultDiff);
 });
 
-test('correct yaml input returns corrent diff json', () => {
+test('correct pathToYaml input returns corrent diff json', () => {
   const { firstConfigPath, secondConfigPath, resultDiff } = testInit('yaml');
 
   expect(genDiff(firstConfigPath, secondConfigPath)).toEqual(resultDiff);
 });
 
-test('correct ini input returns corrent diff json', () => {
+test('correct pathToIni input returns corrent diff json', () => {
   const { firstConfigPath, secondConfigPath, resultDiff } = testInit('ini');
 
   expect(genDiff(firstConfigPath, secondConfigPath)).toEqual(resultDiff);
