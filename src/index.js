@@ -55,14 +55,14 @@ const diffASTToString = ast => JSON.stringify(
   undefined, '  ',
 ).replace(/"/g, '');
 
-export const makeDiff = (before, after) => {
+const makeDiff = (before, after) => {
   const beforeChangingAST = createAST(before);
   const afterChangingAST = createAST(after);
   const diff = diffAST(beforeChangingAST, afterChangingAST);
   return diffASTToString(diff);
 };
 
-export const genDiff = (firstConfigPath, secondConfigPath) => {
+const genDiff = (firstConfigPath, secondConfigPath) => {
   const parse = getParseMethod(firstConfigPath);
   const before = parse(readFile(firstConfigPath));
   const after = parse(readFile(secondConfigPath));
