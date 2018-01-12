@@ -2,14 +2,14 @@ import fs from 'fs';
 import path from 'path';
 import { genDiff } from '../src/gendiff';
 
-const readFixtureFile = fileName => fs.readFileSync(path.join(__dirname, `./__fixtures__/${fileName}`), 'utf-8').replace(/"/g, '');
+const readFixtureFile = fileName => fs.readFileSync(path.join(__dirname, `./__fixtures__/${fileName}`), 'utf-8');
 
 const getPathToFixtures = fileName => `./__tests__/__fixtures__/${fileName}`;
 
 const testInit = inputFormat => ({
-  firstConfigPath: getPathToFixtures(`before.${inputFormat}`),
-  secondConfigPath: getPathToFixtures(`after.${inputFormat}`),
-  resultDiff: readFixtureFile('diff.json'),
+  firstConfigPath: getPathToFixtures(`flatConfigs/before.${inputFormat}`),
+  secondConfigPath: getPathToFixtures(`flatConfigs/after.${inputFormat}`),
+  resultDiff: readFixtureFile('flatConfigs/diff.txt'),
 });
 
 test('correct json input returns corrent diff json', () => {
