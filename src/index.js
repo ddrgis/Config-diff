@@ -4,7 +4,7 @@ import _ from 'lodash';
 import yamlParser from 'js-yaml';
 import iniParser from 'ini';
 
-const readFile = pathToFile => fs.readFileSync(path.resolve(pathToFile), 'utf-8');
+const readFile = pathToFile => fs.readFileSync(path.resolve(process.env.PWD, pathToFile), 'utf-8');
 
 const parsers = {
   json: {
