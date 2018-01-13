@@ -7,10 +7,10 @@ import iniParser from 'ini';
 const readFile = pathToFile => fs.readFileSync(path.resolve(process.env.PWD, pathToFile), 'utf-8');
 
 const parsers = {
-  json: data => JSON.parse(data),
-  yml: data => yamlParser.safeLoad(data),
-  yaml: data => yamlParser.safeLoad(data),
-  ini: data => iniParser.parse(data),
+  json: JSON.parse,
+  yml: yamlParser.safeLoad,
+  yaml: yamlParser.safeLoad,
+  ini: iniParser.parse,
 };
 
 const getExtension = pathToFile => path.extname(pathToFile).slice(1);
