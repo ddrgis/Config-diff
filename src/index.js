@@ -20,37 +20,65 @@ const getParseMethod = (configPath) => {
   return parsers[configExtention];
 };
 
-const createAST = object => _.reduce(
-  object,
-  (acc, value, key) => ({ ...acc, [key]: { value, status: null, children: {} } }), {},
-);
-
-const diffAST = (beforeChangingAST, afterChangingAST) => {
-  const withoutAddedLines = _.reduce(beforeChangingAST, (acc, before, key) => {
-    const after = afterChangingAST[key];
-    if (after === undefined) {
-      return { ...acc, [`- ${key}`]: { ...before, status: 'removed' } };
-    }
-    if (after.value === before.value) {
-      return { ...acc, [`  ${key}`]: { ...before, status: 'notChanged' } };
-    }
-    return { ...acc, [`+ ${key}`]: { ...after, status: 'Changed' }, [`- ${key}`]: { ...before, status: 'changed' } };
-  }, {});
-  const addedKeys = Object.keys(afterChangingAST)
-    .filter(key => beforeChangingAST[key] === undefined);
-
-  return _.reduce(addedKeys, (acc, key) => ({ ...acc, [`+ ${key}`]: { ...afterChangingAST[key], status: 'added' } }), withoutAddedLines);
+const getNodeType = (before, after) => {
+  if (after === undefined) {
+    return 'removed';
+  }
+  if (before === undefined) {
+    return 'added';
+  }
+  if (after === before) {
+    return 'notChanged';
+  }
+  return 'changed';
 };
 
-const diffASTToString = ast => JSON.stringify(
-  _.reduce(ast, (acc, value, key) => ({ ...acc, [key]: value.value }), {}),
-  undefined, '  ',
-).replace(/"/g, '');
+const nodeTypes = {
+  removed: {
+    getNewValue: before => before,
+    nodeToString: (name, nodeValue) => `- ${name}: ${JSON.stringify(nodeValue.value)},\n`,
+  },
+  added: {
+    getNewValue: (before, after) => after,
+    nodeToString: (name, nodeValue) => `+ ${name}: ${JSON.stringify(nodeValue.value)},\n`,
+  },
+  notChanged: {
+    getNewValue: (before, after) => after,
+    nodeToString: (name, nodeValue) => `  ${name}: ${JSON.stringify(nodeValue.value)},\n`,
+  },
+  changed: {
+    getNewValue: (before, after) => after,
+    nodeToString: (name, nodeValue) => `+ ${name}: ${JSON.stringify(nodeValue.value)},\n  - ${name}: ${JSON.stringify(nodeValue.previousValue)},\n`,
+  },
+};
+
+const buildNodeValue = (before, after) => {
+  const nodeType = getNodeType(before, after);
+
+  return {
+    value: nodeTypes[nodeType].getNewValue(before, after),
+    previousValue: before,
+    type: nodeType,
+    children: {},
+  };
+};
+
+const diffAST = (firstConfig, secondConfig) => {
+  const allKeys = _.flatten([Object.keys(firstConfig), Object.keys(secondConfig)]);
+  return _.reduce(allKeys, (acc, key) => {
+    const before = firstConfig[key];
+    const after = secondConfig[key];
+    return { ...acc, [key]: buildNodeValue(before, after) };
+  }, {});
+};
+
+const diffASTToString = (ast) => {
+  const nodes = `${_.reduce(ast, (acc, value, key) => acc.concat(`  ${nodeTypes[value.type].nodeToString(key, value)}`), '')}`;
+  return `{\n${nodes}`.slice(0, -2).concat('\n}').replace(/"/g, '');
+};
 
 const makeDiff = (before, after) => {
-  const beforeChangingAST = createAST(before);
-  const afterChangingAST = createAST(after);
-  const diff = diffAST(beforeChangingAST, afterChangingAST);
+  const diff = diffAST(before, after);
   return diffASTToString(diff);
 };
 
