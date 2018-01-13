@@ -33,33 +33,35 @@ const getNodeType = (previousValue, newValue) => {
   return 'changed';
 };
 
+const nodeToString = (name, value) => `${name}: ${JSON.stringify(value)}`;
+
 const nodeTypes = {
   removed: {
     getNewValue: previousValue => previousValue,
-    nodeToString: node => `- ${node.name}: ${JSON.stringify(node.value)},\n`,
+    toFormattedString: node => `- ${nodeToString(node.name, node.previousValue)},\n`,
   },
   added: {
     getNewValue: (previousValue, newValue) => newValue,
-    nodeToString: node => `+ ${node.name}: ${JSON.stringify(node.value)},\n`,
+    toFormattedString: node => `+ ${nodeToString(node.name, node.newValue)},\n`,
   },
   notChanged: {
     getNewValue: (previousValue, newValue) => newValue,
-    nodeToString: node => `  ${node.name}: ${JSON.stringify(node.value)},\n`,
+    toFormattedString: node => `  ${nodeToString(node.name, node.newValue)},\n`,
   },
   changed: {
     getNewValue: (previousValue, newValue) => newValue,
-    nodeToString: node => `+ ${node.name}: ${JSON.stringify(node.value)},\n  - ${node.name}: ${JSON.stringify(node.previousValue)},\n`,
+    toFormattedString: node => `+ ${nodeToString(node.name, node.newValue)},\n  - ${nodeToString(node.name, node.previousValue)},\n`,
   },
 };
 
-const getNode = (nodeName, previousValue, newValue) => {
+const buildNode = (nodeName, previousValue, newValue) => {
   const type = getNodeType(previousValue, newValue);
   return {
     name: nodeName,
-    value: nodeTypes[type].getNewValue(previousValue, newValue),
+    newValue: nodeTypes[type].getNewValue(previousValue, newValue),
+    previousValue,
     type,
     children: [],
-    previousValue,
   };
 };
 
@@ -70,12 +72,12 @@ const buildAST = (firstConfig, secondConfig) => {
   return _.reduce(allUniqNames, (acc, nodeName) => {
     const previousValue = firstConfig[nodeName];
     const newValue = secondConfig[nodeName];
-    return [...acc, getNode(nodeName, previousValue, newValue)];
+    return [...acc, buildNode(nodeName, previousValue, newValue)];
   }, []);
 };
 
 const diffASTToString = (ast) => {
-  const nodes = `${ast.reduce((acc, node) => acc.concat(`  ${nodeTypes[node.type].nodeToString(node)}`), '')}`;
+  const nodes = `${ast.reduce((acc, node) => acc.concat(`  ${nodeTypes[node.type].toFormattedString(node)}`), '')}`;
   return `{\n${nodes}`.slice(0, -2).concat('\n}').replace(/"/g, '');
 };
 
