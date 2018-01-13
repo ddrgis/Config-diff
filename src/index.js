@@ -20,14 +20,14 @@ const getParseMethod = (configPath) => {
   return parsers[configExtention];
 };
 
-const getNodeType = (before, after) => {
-  if (after === undefined) {
+const getNodeType = (previousValue, newValue) => {
+  if (newValue === undefined) {
     return 'removed';
   }
-  if (before === undefined) {
+  if (previousValue === undefined) {
     return 'added';
   }
-  if (after === before) {
+  if (newValue === previousValue) {
     return 'notChanged';
   }
   return 'changed';
@@ -35,40 +35,39 @@ const getNodeType = (before, after) => {
 
 const nodeTypes = {
   removed: {
-    getNewValue: before => before,
+    getNewValue: previousValue => previousValue,
     nodeToString: (name, nodeValue) => `- ${name}: ${JSON.stringify(nodeValue.value)},\n`,
   },
   added: {
-    getNewValue: (before, after) => after,
+    getNewValue: (previousValue, newValue) => newValue,
     nodeToString: (name, nodeValue) => `+ ${name}: ${JSON.stringify(nodeValue.value)},\n`,
   },
   notChanged: {
-    getNewValue: (before, after) => after,
+    getNewValue: (previousValue, newValue) => newValue,
     nodeToString: (name, nodeValue) => `  ${name}: ${JSON.stringify(nodeValue.value)},\n`,
   },
   changed: {
-    getNewValue: (before, after) => after,
+    getNewValue: (previousValue, newValue) => newValue,
     nodeToString: (name, nodeValue) => `+ ${name}: ${JSON.stringify(nodeValue.value)},\n  - ${name}: ${JSON.stringify(nodeValue.previousValue)},\n`,
   },
 };
 
-const buildNodeValue = (before, after) => {
-  const nodeType = getNodeType(before, after);
-
+const getNodeValue = (previousValue, newValue) => {
+  const type = getNodeType(previousValue, newValue);
   return {
-    value: nodeTypes[nodeType].getNewValue(before, after),
-    previousValue: before,
-    type: nodeType,
+    value: nodeTypes[type].getNewValue(previousValue, newValue),
+    previousValue,
+    type,
     children: {},
   };
 };
 
-const diffAST = (firstConfig, secondConfig) => {
+const buildAST = (firstConfig, secondConfig) => {
   const allKeys = _.flatten([Object.keys(firstConfig), Object.keys(secondConfig)]);
-  return _.reduce(allKeys, (acc, key) => {
-    const before = firstConfig[key];
-    const after = secondConfig[key];
-    return { ...acc, [key]: buildNodeValue(before, after) };
+  return _.reduce(allKeys, (acc, nodeName) => {
+    const previousValue = firstConfig[nodeName];
+    const newValue = secondConfig[nodeName];
+    return { ...acc, [nodeName]: getNodeValue(previousValue, newValue) };
   }, {});
 };
 
@@ -77,17 +76,17 @@ const diffASTToString = (ast) => {
   return `{\n${nodes}`.slice(0, -2).concat('\n}').replace(/"/g, '');
 };
 
-const makeDiff = (before, after) => {
-  const diff = diffAST(before, after);
-  return diffASTToString(diff);
+const makeDiff = (firstConfig, secondConfig) => {
+  const diffAST = buildAST(firstConfig, secondConfig);
+  return diffASTToString(diffAST);
 };
 
 const genDiff = (firstConfigPath, secondConfigPath) => {
   const parse = getParseMethod(firstConfigPath);
-  const before = parse(readFile(firstConfigPath));
-  const after = parse(readFile(secondConfigPath));
+  const firstConfig = parse(readFile(firstConfigPath));
+  const secondConfig = parse(readFile(secondConfigPath));
 
-  return makeDiff(before, after);
+  return makeDiff(firstConfig, secondConfig);
 };
 
 export default genDiff;
