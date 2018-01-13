@@ -10,26 +10,26 @@ const testInit = (inputFormat, fixturesSubDir) => ({
   resultDiff: readFixtureFile(`${fixturesSubDir}/diff.txt`),
 });
 
-// test('correct pathToFlatJson input returns corrent diff json', () => {
-//   const { firstConfigPath, secondConfigPath, resultDiff } = testInit('json', 'flatConfigs');
+test('correct pathToFlatJson input returns corrent diff json', () => {
+  const { firstConfigPath, secondConfigPath, resultDiff } = testInit('json', 'flatConfigs');
 
-//   expect(genDiff(firstConfigPath, secondConfigPath)).toEqual(resultDiff);
-// });
-
-// test('correct pathToFlatYaml input returns corrent diff json', () => {
-//   const { firstConfigPath, secondConfigPath, resultDiff } = testInit('yaml', 'flatConfigs');
-
-//   expect(genDiff(firstConfigPath, secondConfigPath)).toEqual(resultDiff);
-// });
-
-// test('correct pathToFlatIni input returns corrent diff json', () => {
-//   const { firstConfigPath, secondConfigPath, resultDiff } = testInit('ini', 'flatConfigs');
-
-//   expect(genDiff(firstConfigPath, secondConfigPath)).toEqual(resultDiff);
-// });
-
-test('correct treelike json data input returns corrent diff json', () => {
-  const { firstConfigPath, secondConfigPath, resultDiff } = testInit('json', 'treelikeConfigs');
   expect(genDiff(firstConfigPath, secondConfigPath)).toEqual(resultDiff);
 });
+
+test('correct pathToFlatYaml input returns corrent diff json', () => {
+  const { firstConfigPath, secondConfigPath, resultDiff } = testInit('yaml', 'flatConfigs');
+
+  expect(genDiff(firstConfigPath, secondConfigPath)).toEqual(resultDiff);
+});
+
+test('correct pathToFlatIni input returns corrent diff json', () => {
+  const { firstConfigPath, secondConfigPath, resultDiff } = testInit('ini', 'flatConfigs');
+
+  expect(genDiff(firstConfigPath, secondConfigPath)).toEqual(resultDiff);
+});
+
+// test('correct treelike json data input returns corrent diff json', () => {
+//   const { firstConfigPath, secondConfigPath, resultDiff } = testInit('json', 'treelikeConfigs');
+//   expect(genDiff(firstConfigPath, secondConfigPath)).toEqual(resultDiff);
+// });
 
