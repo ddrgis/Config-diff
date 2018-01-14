@@ -28,3 +28,11 @@ test('flat ast rendering to json', () => {
 
   expect(render(flatAST)).toBe(expectedResult);
 });
+
+
+test('treelike AST parsing', () => {
+  const firstConfig = { host: 'hexlet.io', timeout: 50, proxy: '123.234.53.22' };
+  const secondConfig = { timeout: 20, verbose: true, host: 'hexlet.io' };
+
+  expect(parse(firstConfig, secondConfig)).toEqual(flatAST);
+});
