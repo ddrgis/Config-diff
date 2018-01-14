@@ -1,11 +1,12 @@
 
-import buildAST, { render as astToString } from './ast';
+import buildAST from './ast';
 import parse from './parser';
+import astToString from './render';
 
 // Оставил эту функцию для возможной адаптации к данным не из файлов
 const genDiffFromData = (firstConfigData, secondConfigData) => {
   const diffAST = buildAST(firstConfigData, secondConfigData);
-  return astToString(diffAST);
+  return astToString(diffAST, 'json');
 };
 
 const genDiff = (firstConfigPath, secondConfigPath) => {

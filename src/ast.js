@@ -19,7 +19,7 @@ const getNodeType = (previousValue, newValue) => {
 const lineSeparator = '\n';
 const getIndent = depth => (depth < 1 ? '' : '  '.repeat(depth));
 
-const nodeTypes = {
+export const nodeTypes = {
   internalNode: {
     getNodeProps: (previousValue, newValue, parseSubtree) =>
       ({ children: parseSubtree(previousValue, newValue) }),
@@ -54,33 +54,6 @@ const parse = (firstConfig, secondConfig) => {
     const nodeProps = nodeTypes[type].getNodeProps(previousValue, newValue, parse);
     return [...acc, { name: nodeName, type, ...nodeProps }];
   }, []);
-};
-
-const nodeObjectValueToString = (value, depth) => {
-  const jsonStr = JSON.stringify(value, null, '    ');
-
-  return jsonStr.split('\n').map((item, index) => {
-    const newItem = index === 0 ? item : `${getIndent(depth)}${item}`;
-    return newItem;
-  }).join('\n');
-};
-
-export const render = (ast, depth = 1) => {
-  const nodes = ast.map((node) => {
-    const previousValue = _.isObject(node.previousValue) ?
-      nodeObjectValueToString(node.previousValue, depth + 1)
-      : node.previousValue;
-    const newValue = _.isObject(node.newValue) ?
-      nodeObjectValueToString(node.newValue, depth + 1)
-      : node.newValue;
-    return nodeTypes[node.type].toString({
-      name: node.name,
-      newValue,
-      previousValue,
-      children: node.children,
-    }, depth, render);
-  });
-  return `{\n${nodes.join(lineSeparator).replace(/"/g, '')}\n${getIndent(depth - 1)}}`;
 };
 
 export default parse;

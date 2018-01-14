@@ -1,5 +1,5 @@
-import { readFixtureFile, getPathToFixtures } from './utils/utils';
-import parseAST, { render } from '../src/ast';
+import { getPathToFixtures } from './utils/utils';
+import parseAST from '../src/ast';
 import parseConfig from '../src/parser';
 
 const flatAST = [
@@ -22,12 +22,6 @@ test('flat AST parsing', () => {
   const secondConfig = { timeout: 20, verbose: true, host: 'hexlet.io' };
 
   expect(parseAST(firstConfig, secondConfig)).toEqual(flatAST);
-});
-
-test('flat ast rendering to json', () => {
-  const expectedResult = readFixtureFile('flatConfigs/diff.txt');
-
-  expect(render(flatAST)).toBe(expectedResult);
 });
 
 const simpleTreelikeAST = [
