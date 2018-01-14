@@ -1,10 +1,5 @@
-import fs from 'fs';
-import path from 'path';
 import genDiff from '../src/';
-
-const readFixtureFile = fileName => fs.readFileSync(path.join(__dirname, `./__fixtures__/${fileName}`), 'utf-8');
-
-const getPathToFixtures = fileName => `./__tests__/__fixtures__/${fileName}`;
+import { getPathToFixtures, readFixtureFile } from './utils/utils';
 
 const testInit = inputFormat => ({
   firstConfigPath: getPathToFixtures(`flatConfigs/before.${inputFormat}`),

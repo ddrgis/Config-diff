@@ -75,4 +75,22 @@ const parse = (firstConfig, secondConfig) => {
   }, []);
 };
 
+const separator = ',\n  ';
+
+export const render = (ast) => {
+  const nodes = ast.map((node) => {
+    switch (node.type) {
+      case 'added':
+        return `+ ${node.name}: ${node.newValue}`;
+      case 'deleted':
+        return `- ${node.name}: ${node.previousValue}`;
+      case 'notChanged':
+        return `  ${node.name}: ${node.newValue}`;
+      default:
+        return `+ ${node.name}: ${node.newValue}${separator}- ${node.name}: ${node.previousValue}`;
+    }
+  });
+  return `{\n  ${nodes.join(separator).replace(/"/g, '')}\n}`;
+};
+
 export default parse;

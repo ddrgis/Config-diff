@@ -24,7 +24,8 @@
   },
   "homepage": "https://github.com/ddrgis/project-lvl2-s213#readme",
   "jest": {
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "modulePathIgnorePatterns": ["<rootDir>/__tests__/utils"]
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
