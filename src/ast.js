@@ -16,7 +16,7 @@ const getNodeType = (previousValue, newValue) => {
   return 'changed';
 };
 
-export const nodeTypes = {
+const nodeTypes = {
   internalNode: {
     getNodeProps: (previousValue, newValue, parseSubtree) =>
       ({ children: parseSubtree(previousValue, newValue) }),
