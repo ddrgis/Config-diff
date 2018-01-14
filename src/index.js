@@ -5,7 +5,6 @@ import parse from './parser';
 // Оставил эту функцию для возможной адаптации к данным не из файлов
 const genDiffFromData = (firstConfigData, secondConfigData) => {
   const diffAST = buildAST(firstConfigData, secondConfigData);
-  console.log(diffAST);
   return astToString(diffAST);
 };
 

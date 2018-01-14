@@ -117,10 +117,10 @@ test('treelike ast parsing from yaml', () => {
   expect(parseAST(firstConfig, secondConfig)).toEqual(bigTreelikeAST);
 });
 
-// test('treelike ast parsing from ini', () => {
-//   const firstConfig = parseConfig(getPathToFixtures('treelikeConfigs/before.ini'));
-//   const secondConfig = parseConfig(getPathToFixtures('treelikeConfigs/after.ini'));
+test('treelike ast parsing from ini', () => {
+  const firstConfig = parseConfig(getPathToFixtures('treelikeConfigs/before.ini'));
+  const secondConfig = parseConfig(getPathToFixtures('treelikeConfigs/after.ini'));
 
-//   expect(parseAST(firstConfig, secondConfig)).toEqual(bigTreelikeAST);
-// });
+  expect(parseAST(firstConfig, secondConfig)).toEqual(bigTreelikeAST);
+});
 

@@ -41,10 +41,10 @@ test('correct treelike YAML data input returns corrent diff json', () => {
   expect(genDiff(firstConfig, secondConfig)).toEqual(resultDiff);
 });
 
-// test('correct treelike INI data input returns corrent diff json', () => {
-//   const firstConfig = getPathToFixtures('treelikeConfigs/before.ini');
-//   const secondConfig = getPathToFixtures('treelikeConfigs/after.ini');
-//   const resultDiff = readFixtureFile('treelikeConfigs/diff.txt');
+test('correct treelike INI data input returns corrent diff json', () => {
+  const firstConfig = getPathToFixtures('treelikeConfigs/before.ini');
+  const secondConfig = getPathToFixtures('treelikeConfigs/after.ini');
+  const resultDiff = readFixtureFile('treelikeConfigs/diff.txt');
 
-//   expect(genDiff(firstConfig, secondConfig)).toEqual(resultDiff);
-// });
+  expect(genDiff(firstConfig, secondConfig)).toEqual(resultDiff);
+});
