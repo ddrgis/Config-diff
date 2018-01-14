@@ -1,5 +1,6 @@
-import { readFixtureFile } from './utils/utils';
-import parse, { render } from '../src/ast';
+import { readFixtureFile, getPathToFixtures } from './utils/utils';
+import parseAST, { render } from '../src/ast';
+import parseConfig from '../src/parser';
 
 const flatAST = [
   {
@@ -20,7 +21,7 @@ test('flat AST parsing', () => {
   const firstConfig = { host: 'hexlet.io', timeout: 50, proxy: '123.234.53.22' };
   const secondConfig = { timeout: 20, verbose: true, host: 'hexlet.io' };
 
-  expect(parse(firstConfig, secondConfig)).toEqual(flatAST);
+  expect(parseAST(firstConfig, secondConfig)).toEqual(flatAST);
 });
 
 test('flat ast rendering to json', () => {
@@ -29,10 +30,24 @@ test('flat ast rendering to json', () => {
   expect(render(flatAST)).toBe(expectedResult);
 });
 
+const treelikeAST = [
+  {
+    name: 'group1',
+    type: 'internalNode',
+    children: [
+      {
+        name: 'baz', type: 'changed', newValue: 'bars', previousValue: 'bas',
+      },
+      {
+        name: 'foo', type: 'notChanged', newValue: 'bar',
+      },
+    ],
+  },
+];
 
-test('treelike AST parsing', () => {
-  const firstConfig = { host: 'hexlet.io', timeout: 50, proxy: '123.234.53.22' };
-  const secondConfig = { timeout: 20, verbose: true, host: 'hexlet.io' };
+test('simple treelike AST parsing (group1)', () => {
+  const firstConfig = parseConfig(getPathToFixtures('treelikeConfigs/group1Before.json'));
+  const secondConfig = parseConfig(getPathToFixtures('treelikeConfigs/group1After.json'));
 
-  expect(parse(firstConfig, secondConfig)).toEqual(flatAST);
+  expect(parseAST(firstConfig, secondConfig)).toEqual(treelikeAST);
 });

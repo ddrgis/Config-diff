@@ -1,6 +1,9 @@
 import _ from 'lodash';
 
 const getNodeType = (previousValue, newValue) => {
+  if (_.isPlainObject(previousValue) && _.isPlainObject(newValue)) {
+    return 'internalNode';
+  }
   if (newValue === undefined) {
     return 'deleted';
   }
@@ -16,6 +19,10 @@ const getNodeType = (previousValue, newValue) => {
 const separator = ',\n  ';
 
 const nodeTypes = {
+  internalNode: {
+    getNodeProps: (previousValue, newValue, parseSubtree) =>
+      ({ children: parseSubtree(previousValue, newValue) }),
+  },
   deleted: {
     getNodeProps: previousValue => ({ previousValue }),
     toString: self => `- ${self.name}: ${self.previousValue}`,
@@ -34,16 +41,6 @@ const nodeTypes = {
   },
 };
 
-const buildNode = (name, previousValue, newValue) => {
-  const type = getNodeType(previousValue, newValue);
-  const nodeProps = nodeTypes[type].getNodeProps(previousValue, newValue);
-  return {
-    name,
-    type,
-    ...nodeProps,
-  };
-};
-
 const parse = (firstConfig, secondConfig) => {
   const allUniqNames = _.flatten([Object.keys(firstConfig), Object.keys(secondConfig)])
     .filter((value, index, self) => self.indexOf(value) === index);
@@ -51,7 +48,9 @@ const parse = (firstConfig, secondConfig) => {
   return _.reduce(allUniqNames, (acc, nodeName) => {
     const previousValue = firstConfig[nodeName];
     const newValue = secondConfig[nodeName];
-    return [...acc, buildNode(nodeName, previousValue, newValue)];
+    const type = getNodeType(previousValue, newValue);
+    const nodeProps = nodeTypes[type].getNodeProps(previousValue, newValue, parse);
+    return [...acc, { name: nodeName, type, ...nodeProps }];
   }, []);
 };
 
