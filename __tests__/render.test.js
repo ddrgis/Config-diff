@@ -16,8 +16,13 @@ const flatAST = [
   },
 ];
 
-test('flat ast rendering to json', () => {
+test('flat ast rendering to JSON', () => {
   const expectedResult = readFixtureFile('flatConfigs/diff.txt');
 
   expect(render(flatAST)).toBe(expectedResult);
+});
+
+test('flat ast rendering to Plain', () => {
+  const expectedResult = readFixtureFile('flatConfigs/plainDiff.txt');
+  expect(render(flatAST, 'plain')).toBe(expectedResult);
 });

@@ -31,7 +31,11 @@ const toJSON = (ast, depth = 1) => {
   return `{\n${nodes.join(lineSeparator).replace(/"/g, '')}\n${getIndent(depth - 1)}}`;
 };
 
-const toPlainText = ast => ast.toString();
+const toPlainText = (ast) => {
+  return ast.reduce((acc, { name, type, newValue, previousValue }) => {
+    return [...acc, nodeTypes[type].toPlain({ name, newValue, previousValue })];
+  }, []).filter(line => line).join('\n');
+};
 
 const render = (ast, outputFormat = 'json') => {
   const renders = {
