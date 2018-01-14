@@ -21,12 +21,20 @@ const toJSON = (ast, depth = 1) => {
     const newValue = _.isObject(node.newValue) ?
       nodeObjectValueToString(node.newValue, depth + 1)
       : node.newValue;
-    return nodeTypes[node.type].toString({
-      name: node.name,
-      newValue,
-      previousValue,
-      children: node.children,
-    }, depth, toJSON);
+
+    switch (node.type) {
+      case 'internalNode':
+        return `${getIndent(depth + 1)}${node.name}: ${toJSON(node.children, depth + 2)}`;
+      case 'deleted':
+        return `${getIndent(depth)}- ${node.name}: ${previousValue}`;
+      case 'added':
+        return `${getIndent(depth)}+ ${node.name}: ${newValue}`;
+      case 'notChanged':
+        return `${getIndent(depth)}  ${node.name}: ${newValue}`;
+      default:
+      case 'changed':
+        return `${getIndent(depth)}+ ${node.name}: ${newValue}\n${getIndent(depth)}- ${node.name}: ${previousValue}`;
+    }
   });
   return `{\n${nodes.join(lineSeparator).replace(/"/g, '')}\n${getIndent(depth - 1)}}`;
 };
