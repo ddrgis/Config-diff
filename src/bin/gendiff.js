@@ -12,11 +12,7 @@ commander
   .arguments('<firstConfig> <secondConfig>')
   .option('-f, --format [type]', 'Output format', 'json')
   .action((firstConfigPath, secondConfigPath, cmd) => {
-    if (cmd.format !== 'json') {
-      console.log('Different formats haven\'t impletemented yet\nUse gendiff <firstConfigPath> <secondConfigPath>');
-    } else {
-      console.log(genDiff(firstConfigPath, secondConfigPath));
-    }
+    console.log(genDiff(firstConfigPath, secondConfigPath, this.format));
   });
 
 commander.parse(process.argv);
