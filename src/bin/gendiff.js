@@ -10,8 +10,8 @@ commander
 
 commander
   .arguments('<firstConfig> <secondConfig>')
-  .option('-f, --format [type]', 'Output format', 'json')
-  .action((firstConfigPath, secondConfigPath, cmd) => {
+  .option('-f, --format [type]', 'Output format', 'string')
+  .action((firstConfigPath, secondConfigPath) => {
     console.log(genDiff(firstConfigPath, secondConfigPath, this.format));
   });
 

@@ -4,15 +4,15 @@ const lineSeparator = '\n';
 const getIndent = depth => (depth < 1 ? '' : '  '.repeat(depth));
 
 const nodeObjectValueToString = (value, depth) => {
-  const jsonStr = JSON.stringify(value, null, '    ');
+  const jsonString = JSON.stringify(value, null, '    ');
 
-  return jsonStr.split('\n').map((item, index) => {
+  return jsonString.split('\n').map((item, index) => {
     const newItem = index === 0 ? item : `${getIndent(depth)}${item}`;
     return newItem;
   }).join('\n');
 };
 
-const toJSON = (ast, depth = 1) => {
+const toStringFormat = (ast, depth = 1) => {
   const nodes = ast.map((node) => {
     const previousValue = _.isObject(node.previousValue) ?
       nodeObjectValueToString(node.previousValue, depth + 1)
@@ -23,7 +23,7 @@ const toJSON = (ast, depth = 1) => {
 
     switch (node.type) {
       case 'internalNode':
-        return `${getIndent(depth + 1)}${node.name}: ${toJSON(node.children, depth + 2)}`;
+        return `${getIndent(depth + 1)}${node.name}: ${toStringFormat(node.children, depth + 2)}`;
       case 'deleted':
         return `${getIndent(depth)}- ${node.name}: ${previousValue}`;
       case 'added':
@@ -59,13 +59,13 @@ const toPlainText = (ast, parentName) => ast.reduce((acc, {
   }
 }, []).filter(line => line).join('\n');
 
-const render = (ast, outputFormat = 'json') => {
+const render = (ast, outputFormat = 'string') => {
   const renders = {
-    json: toJSON,
+    string: toStringFormat,
     plain: toPlainText,
   };
 
-  return renders[outputFormat] === undefined ? renders.json(ast) : renders[outputFormat](ast);
+  return renders[outputFormat] === undefined ? renders.string(ast) : renders[outputFormat](ast);
 };
 
 export default render;
