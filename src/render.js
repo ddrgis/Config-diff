@@ -12,6 +12,40 @@ const nodeObjectValueToString = (value, depth) => {
   }).join('\n');
 };
 
+const nodeTypes = {
+  internalNode: {
+    toStringFormat: ({ name, children }, depth, toStringFunc) =>
+      `${getIndent(depth + 1)}${name}: ${toStringFunc(children, depth + 2)}`,
+    toPlainText: ({ children, fullName }, toPlainTextFunc) => toPlainTextFunc(children, fullName),
+    toJSON: ({ name, children }, toJSONFunc) => ({ [name]: toJSONFunc(children) }),
+  },
+  deleted: {
+    toStringFormat: ({ name, previousValue }, depth) => `${getIndent(depth)}- ${name}: ${previousValue}`,
+    toPlainText: ({ fullName }) => `Property '${fullName}' was removed`,
+    toJSON: ({ name, type, previousValue }) => ({ [name]: { was: type, previousValue } }),
+  },
+  added: {
+    toStringFormat: ({ name, newValue }, depth) => `${getIndent(depth)}+ ${name}: ${newValue}`,
+    toPlainText: ({ fullName, complexValue, newValue }) =>
+      `Property '${fullName}' was added with ${complexValue === 'complex value' ? complexValue : 'value: \''.concat(newValue).concat('\'')}`,
+    toJSON: ({ name, type, newValue }) => ({ [name]: { was: type, newValue } }),
+  },
+  notChanged: {
+    toStringFormat: ({ name, newValue }, depth) => `${getIndent(depth)}  ${name}: ${newValue}`,
+    toPlainText: () => '',
+    toJSON: ({ name, type, newValue }) => ({ [name]: { was: type, value: newValue } }),
+  },
+  changed: {
+    toStringFormat: ({ name, newValue, previousValue }, depth) =>
+      `${getIndent(depth)}+ ${name}: ${newValue}\n${getIndent(depth)}- ${name}: ${previousValue}`,
+    toPlainText: ({ fullName, previousValue, newValue }) =>
+      `Property '${fullName}' was updated. From '${previousValue}' to '${newValue}'`,
+    toJSON: ({
+      name, type, previousValue, newValue,
+    }) => ({ [name]: { was: type, from: previousValue, to: newValue } }),
+  },
+};
+
 const toStringFormat = (ast, depth = 1) => {
   const nodes = ast.map((node) => {
     const previousValue = _.isObject(node.previousValue) ?
@@ -20,63 +54,23 @@ const toStringFormat = (ast, depth = 1) => {
     const newValue = _.isObject(node.newValue) ?
       nodeObjectValueToString(node.newValue, depth + 1)
       : node.newValue;
-
-    switch (node.type) {
-      case 'internalNode':
-        return `${getIndent(depth + 1)}${node.name}: ${toStringFormat(node.children, depth + 2)}`;
-      case 'deleted':
-        return `${getIndent(depth)}- ${node.name}: ${previousValue}`;
-      case 'added':
-        return `${getIndent(depth)}+ ${node.name}: ${newValue}`;
-      case 'notChanged':
-        return `${getIndent(depth)}  ${node.name}: ${newValue}`;
-      default:
-      case 'changed':
-        return `${getIndent(depth)}+ ${node.name}: ${newValue}\n${getIndent(depth)}- ${node.name}: ${previousValue}`;
-    }
+    return nodeTypes[node.type]
+      .toStringFormat({ ...node, previousValue, newValue }, depth, toStringFormat);
   });
   return `{\n${nodes.join(lineSeparator).replace(/"/g, '')}\n${getIndent(depth - 1)}}`;
 };
 
-const toPlainText = (ast, parentName) => ast.reduce((acc, {
-  name, type, newValue, previousValue, children,
-}) => {
+const toPlainText = (ast, parentName) => ast.reduce((acc, node) => {
+  const { name, newValue, type } = node;
+  console.log(node);
   const fullName = parentName ? `${parentName}.${name}` : name;
   const complexValue = _.isObject(newValue) ? 'complex value' : newValue;
-
-  switch (type) {
-    case 'internalNode':
-      return [...acc, toPlainText(children, fullName)];
-    case 'deleted':
-      return [...acc, `Property '${fullName}' was removed`];
-    case 'added':
-      return [...acc, `Property '${fullName}' was added with ${complexValue === 'complex value' ? complexValue : 'value: \''.concat(newValue).concat('\'')}`];
-    case 'changed':
-      return [...acc, `Property '${fullName}' was updated. From '${previousValue}' to '${newValue}'`];
-    default:
-    case 'notChanged':
-      return [...acc];
-  }
+  return [...acc, nodeTypes[type].toPlainText({ ...node, fullName, complexValue }, toPlainText)];
 }, []).filter(line => line).join('\n');
 
 const toJSON = (ast) => {
-  const jsonData = ast.reduce((acc, {
-    name, type, newValue, previousValue, children,
-  }) => {
-    switch (type) {
-      case 'internalNode':
-        return { ...acc, [name]: toJSON(children) };
-      case 'deleted':
-        return { ...acc, [name]: { was: type, previousValue } };
-      case 'added':
-        return { ...acc, [name]: { was: type, newValue } };
-      case 'changed':
-        return { ...acc, [name]: { was: type, from: previousValue, to: newValue } };
-      default:
-      case 'notChanged':
-        return { ...acc, [name]: { was: type, value: newValue } };
-    }
-  }, {});
+  const jsonData = ast.reduce((acc, node) =>
+    ({ ...acc, ...nodeTypes[node.type].toJSON(node, toJSON) }), {});
   return jsonData;
 };
 
