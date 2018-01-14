@@ -45,7 +45,7 @@ const simpleTreelikeAST = [
   },
 ];
 
-test('simple treelike AST parsing (group1)', () => {
+test('simple treelike AST parsing (group1) from json', () => {
   const firstConfig = parseConfig(getPathToFixtures('treelikeConfigs/group1Before.json'));
   const secondConfig = parseConfig(getPathToFixtures('treelikeConfigs/group1After.json'));
 
@@ -103,9 +103,24 @@ const bigTreelikeAST = [
   },
 ];
 
-test('treelike ast parsing', () => {
+test('treelike ast parsing from json', () => {
   const firstConfig = parseConfig(getPathToFixtures('treelikeConfigs/before.json'));
   const secondConfig = parseConfig(getPathToFixtures('treelikeConfigs/after.json'));
 
   expect(parseAST(firstConfig, secondConfig)).toEqual(bigTreelikeAST);
 });
+
+test('treelike ast parsing from yaml', () => {
+  const firstConfig = parseConfig(getPathToFixtures('treelikeConfigs/before.yaml'));
+  const secondConfig = parseConfig(getPathToFixtures('treelikeConfigs/after.yaml'));
+
+  expect(parseAST(firstConfig, secondConfig)).toEqual(bigTreelikeAST);
+});
+
+// test('treelike ast parsing from ini', () => {
+//   const firstConfig = parseConfig(getPathToFixtures('treelikeConfigs/before.ini'));
+//   const secondConfig = parseConfig(getPathToFixtures('treelikeConfigs/after.ini'));
+
+//   expect(parseAST(firstConfig, secondConfig)).toEqual(bigTreelikeAST);
+// });
+
