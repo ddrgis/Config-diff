@@ -1,0 +1,59 @@
+{
+  "common": {
+    "setting1": {
+      "value": "Value 1",
+      "was": "notChanged"
+    },
+    "setting2": {
+      "previousValue": "200",
+      "was": "deleted"
+    },
+    "setting3": {
+      "value": true,
+      "was": "notChanged"
+    },
+    "setting4": {
+      "newValue": "blah blah",
+      "was": "added"
+    },
+    "setting5": {
+      "newValue": {
+        "key5": "value5"
+      },
+      "was": "added"
+    },
+    "setting6": {
+      "key": {
+        "value": "value",
+        "was": "notChanged"
+      },
+      "ops": {
+        "newValue": "vops",
+        "was": "added"
+      }
+    }
+  },
+  "group1": {
+    "baz": {
+      "from": "bas",
+      "to": "bars",
+      "was": "changed"
+    },
+    "foo": {
+      "value": "bar",
+      "was": "notChanged"
+    }
+  },
+  "group2": {
+    "previousValue": {
+      "abc": "12345"
+    },
+    "was": "deleted"
+  },
+  "group3": {
+    "newValue": {
+      "fee": "100500"
+    },
+    "was": "added"
+  }
+}

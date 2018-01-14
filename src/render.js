@@ -59,10 +59,32 @@ const toPlainText = (ast, parentName) => ast.reduce((acc, {
   }
 }, []).filter(line => line).join('\n');
 
+const toJSON = (ast) => {
+  const jsonData = ast.reduce((acc, {
+    name, type, newValue, previousValue, children,
+  }) => {
+    switch (type) {
+      case 'internalNode':
+        return { ...acc, [name]: toJSON(children) };
+      case 'deleted':
+        return { ...acc, [name]: { was: type, previousValue } };
+      case 'added':
+        return { ...acc, [name]: { was: type, newValue } };
+      case 'changed':
+        return { ...acc, [name]: { was: type, from: previousValue, to: newValue } };
+      default:
+      case 'notChanged':
+        return { ...acc, [name]: { was: type, value: newValue } };
+    }
+  }, {});
+  return jsonData;
+};
+
 const render = (ast, outputFormat = 'string') => {
   const renders = {
     string: toStringFormat,
     plain: toPlainText,
+    json: toJSON,
   };
 
   return renders[outputFormat] === undefined ? renders.string(ast) : renders[outputFormat](ast);
