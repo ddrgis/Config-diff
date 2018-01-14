@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import { nodeTypes } from './ast';
 
 const lineSeparator = '\n';
 const getIndent = depth => (depth < 1 ? '' : '  '.repeat(depth));
@@ -39,15 +38,26 @@ const toJSON = (ast, depth = 1) => {
   return `{\n${nodes.join(lineSeparator).replace(/"/g, '')}\n${getIndent(depth - 1)}}`;
 };
 
-const toPlainText = (ast, parentName) => {
-  console.log(ast);
-  return ast.reduce((acc, { name, type, newValue, previousValue, children }) => {
-    const fullName = parentName ? `${parentName}.${name}` : name;
-    const complexValue = _.isObject(newValue) ? 'complex value' : newValue;
-    console.log(complexValue, newValue);
-    return [...acc, nodeTypes[type].toPlain({ name: fullName, newValue: complexValue, previousValue, children }, toPlainText)];
-  }, []).filter(line => line).join('\n');
-};
+const toPlainText = (ast, parentName) => ast.reduce((acc, {
+  name, type, newValue, previousValue, children,
+}) => {
+  const fullName = parentName ? `${parentName}.${name}` : name;
+  const complexValue = _.isObject(newValue) ? 'complex value' : newValue;
+
+  switch (type) {
+    case 'internalNode':
+      return [...acc, toPlainText(children, fullName)];
+    case 'deleted':
+      return [...acc, `Property '${fullName}' was removed`];
+    case 'added':
+      return [...acc, `Property '${fullName}' was added with ${complexValue === 'complex value' ? complexValue : 'value: \''.concat(newValue).concat('\'')}`];
+    case 'changed':
+      return [...acc, `Property '${fullName}' was updated. From '${previousValue}' to '${newValue}'`];
+    default:
+    case 'notChanged':
+      return [...acc];
+  }
+}, []).filter(line => line).join('\n');
 
 const render = (ast, outputFormat = 'json') => {
   const renders = {

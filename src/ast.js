@@ -20,23 +20,18 @@ export const nodeTypes = {
   internalNode: {
     getNodeProps: (previousValue, newValue, parseSubtree) =>
       ({ children: parseSubtree(previousValue, newValue) }),
-    toPlain: ({ name, children }, subtreeRenderFunc) => subtreeRenderFunc(children, name),
   },
   deleted: {
     getNodeProps: previousValue => ({ previousValue }),
-    toPlain: ({ name }) => `Property '${name}' was removed`,
   },
   added: {
     getNodeProps: (previousValue, newValue) => ({ newValue }),
-    toPlain: ({ name, newValue }) => `Property '${name}' was added with ${newValue === 'complex value' ? newValue : 'value: \''.concat(newValue).concat('\'')}`,
   },
   notChanged: {
     getNodeProps: (previousValue, newValue) => ({ newValue }),
-    toPlain: () => '',
   },
   changed: {
     getNodeProps: (previousValue, newValue) => ({ newValue, previousValue }),
-    toPlain: ({ name, newValue, previousValue }) => `Property '${name}' was updated. From '${previousValue}' to '${newValue}'`,
   },
 };
 
