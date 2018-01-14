@@ -16,28 +16,30 @@ const getNodeType = (previousValue, newValue) => {
   return 'changed';
 };
 
-const separator = ',\n  ';
+const lineSeparator = '\n';
+const getIndent = depth => (depth < 1 ? '' : '  '.repeat(depth));
 
 const nodeTypes = {
   internalNode: {
     getNodeProps: (previousValue, newValue, parseSubtree) =>
       ({ children: parseSubtree(previousValue, newValue) }),
+    toString: ({ name, children }, depth, renderFunc) => `${getIndent(depth + 1)}${name}: ${renderFunc(children, depth + 2)}`,
   },
   deleted: {
     getNodeProps: previousValue => ({ previousValue }),
-    toString: self => `- ${self.name}: ${self.previousValue}`,
+    toString: ({ name, previousValue }, depth) => `${getIndent(depth)}- ${name}: ${previousValue}`,
   },
   added: {
     getNodeProps: (previousValue, newValue) => ({ newValue }),
-    toString: self => `+ ${self.name}: ${self.newValue}`,
+    toString: ({ name, newValue }, depth) => `${getIndent(depth)}+ ${name}: ${newValue}`,
   },
   notChanged: {
     getNodeProps: (previousValue, newValue) => ({ newValue }),
-    toString: self => `  ${self.name}: ${self.newValue}`,
+    toString: ({ name, newValue }, depth) => `${getIndent(depth)}  ${name}: ${newValue}`,
   },
   changed: {
     getNodeProps: (previousValue, newValue) => ({ newValue, previousValue }),
-    toString: self => `+ ${self.name}: ${self.newValue}${separator}- ${self.name}: ${self.previousValue}`,
+    toString: ({ name, newValue, previousValue }, depth) => `${getIndent(depth)}+ ${name}: ${newValue}${lineSeparator}${getIndent(depth)}- ${name}: ${previousValue}`,
   },
 };
 
@@ -54,9 +56,31 @@ const parse = (firstConfig, secondConfig) => {
   }, []);
 };
 
-export const render = (ast) => {
-  const nodes = ast.map(node => nodeTypes[node.type].toString(node));
-  return `{\n  ${nodes.join(separator).replace(/"/g, '')}\n}`;
+const nodeObjectValueToString = (value, depth) => {
+  const jsonStr = JSON.stringify(value, null, '    ');
+
+  return jsonStr.split('\n').map((item, index) => {
+    const newItem = index === 0 ? item : `${getIndent(depth)}${item}`;
+    return newItem;
+  }).join('\n');
+};
+
+export const render = (ast, depth = 1) => {
+  const nodes = ast.map((node) => {
+    const previousValue = _.isObject(node.previousValue) ?
+      nodeObjectValueToString(node.previousValue, depth + 1)
+      : node.previousValue;
+    const newValue = _.isObject(node.newValue) ?
+      nodeObjectValueToString(node.newValue, depth + 1)
+      : node.newValue;
+    return nodeTypes[node.type].toString({
+      name: node.name,
+      newValue,
+      previousValue,
+      children: node.children,
+    }, depth, render);
+  });
+  return `{\n${nodes.join(lineSeparator).replace(/"/g, '')}\n${getIndent(depth - 1)}}`;
 };
 
 export default parse;
