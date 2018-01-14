@@ -13,50 +13,30 @@ const getNodeType = (previousValue, newValue) => {
   return 'changed';
 };
 
+const separator = ',\n  ';
+
 const nodeTypes = {
-  // internalNode: {
-  //   getNewValue: () => null,
-  //   // getChildren:
-  // },
   deleted: {
     getNodeProps: previousValue => ({ previousValue }),
-    // getChildren: previousValue => (typeof previousValue === 'object' ? previousValue : []),
+    toString: self => `- ${self.name}: ${self.previousValue}`,
   },
   added: {
     getNodeProps: (previousValue, newValue) => ({ newValue }),
-    // getChildren: (previousValue, newValue) => (typeof newValue === 'object' ? newValue : []),
+    toString: self => `+ ${self.name}: ${self.newValue}`,
   },
   notChanged: {
     getNodeProps: (previousValue, newValue) => ({ newValue }),
-    // getChildren: previousValue => (typeof previousValue === 'object' ? previousValue : []),
+    toString: self => `  ${self.name}: ${self.newValue}`,
   },
   changed: {
     getNodeProps: (previousValue, newValue) => ({ newValue, previousValue }),
-    // getChildren: (previousValue, newValue) => (typeof newValue === 'object' ? newValue : []),
+    toString: self => `+ ${self.name}: ${self.newValue}${separator}- ${self.name}: ${self.previousValue}`,
   },
 };
 
 const buildNode = (name, previousValue, newValue) => {
   const type = getNodeType(previousValue, newValue);
   const nodeProps = nodeTypes[type].getNodeProps(previousValue, newValue);
-  // const children = nodeTypes[type].getChildren(previousValue, newValue);
-  // const previousChildren = typeof previousValue === 'object' ? previousValue : [];
-  // if (nodeProps === null) {
-  //   return {
-  //     name,
-  //     newValue: nodeProps,
-  //     type,
-  //     children: _.reduce(children, (acc, childValue, childName) => ([
-  //       ...acc,
-  //       {
-  //         children,
-  //         newValue,
-  //         type,
-  //         [childName]: buildNode(name, previousChildren[childName], childValue),
-  //       },
-  //     ]), []),
-  //   };
-  // }
   return {
     name,
     type,
@@ -75,21 +55,8 @@ const parse = (firstConfig, secondConfig) => {
   }, []);
 };
 
-const separator = ',\n  ';
-
 export const render = (ast) => {
-  const nodes = ast.map((node) => {
-    switch (node.type) {
-      case 'added':
-        return `+ ${node.name}: ${node.newValue}`;
-      case 'deleted':
-        return `- ${node.name}: ${node.previousValue}`;
-      case 'notChanged':
-        return `  ${node.name}: ${node.newValue}`;
-      default:
-        return `+ ${node.name}: ${node.newValue}${separator}- ${node.name}: ${node.previousValue}`;
-    }
-  });
+  const nodes = ast.map(node => nodeTypes[node.type].toString(node));
   return `{\n  ${nodes.join(separator).replace(/"/g, '')}\n}`;
 };
 
