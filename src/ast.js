@@ -22,8 +22,8 @@ export const nodeTypes = {
   internalNode: {
     getNodeProps: (previousValue, newValue, parseSubtree) =>
       ({ children: parseSubtree(previousValue, newValue) }),
-    toString: ({ name, children }, depth, renderFunc) => `${getIndent(depth + 1)}${name}: ${renderFunc(children, depth + 2)}`,
-    toPlain: () => '',
+    toString: ({ name, children }, depth, subtreeRenderFunc) => `${getIndent(depth + 1)}${name}: ${subtreeRenderFunc(children, depth + 2)}`,
+    toPlain: ({ name, children }, subtreeRenderFunc) => subtreeRenderFunc(children, name),
   },
   deleted: {
     getNodeProps: previousValue => ({ previousValue }),
@@ -33,7 +33,7 @@ export const nodeTypes = {
   added: {
     getNodeProps: (previousValue, newValue) => ({ newValue }),
     toString: ({ name, newValue }, depth) => `${getIndent(depth)}+ ${name}: ${newValue}`,
-    toPlain: ({ name, newValue }) => `Property '${name}' was added with value: ${newValue}`,
+    toPlain: ({ name, newValue }) => `Property '${name}' was added with ${newValue === 'complex value' ? newValue : 'value: \''.concat(newValue).concat('\'')}`,
   },
   notChanged: {
     getNodeProps: (previousValue, newValue) => ({ newValue }),

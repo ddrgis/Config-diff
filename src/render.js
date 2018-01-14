@@ -31,9 +31,13 @@ const toJSON = (ast, depth = 1) => {
   return `{\n${nodes.join(lineSeparator).replace(/"/g, '')}\n${getIndent(depth - 1)}}`;
 };
 
-const toPlainText = (ast) => {
-  return ast.reduce((acc, { name, type, newValue, previousValue }) => {
-    return [...acc, nodeTypes[type].toPlain({ name, newValue, previousValue })];
+const toPlainText = (ast, parentName) => {
+  console.log(ast);
+  return ast.reduce((acc, { name, type, newValue, previousValue, children }) => {
+    const fullName = parentName ? `${parentName}.${name}` : name;
+    const complexValue = _.isObject(newValue) ? 'complex value' : newValue;
+    console.log(complexValue, newValue);
+    return [...acc, nodeTypes[type].toPlain({ name: fullName, newValue: complexValue, previousValue, children }, toPlainText)];
   }, []).filter(line => line).join('\n');
 };
 

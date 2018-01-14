@@ -1,5 +1,6 @@
 import { readFixtureFile } from './utils/utils';
 import render from '../src/render';
+import { bigTreelikeAST } from './utils/testData';
 
 const flatAST = [
   {
@@ -25,4 +26,9 @@ test('flat ast rendering to JSON', () => {
 test('flat ast rendering to Plain', () => {
   const expectedResult = readFixtureFile('flatConfigs/plainDiff.txt');
   expect(render(flatAST, 'plain')).toBe(expectedResult);
+});
+
+test('treelike ast rendering to Plain', () => {
+  const expectedResult = readFixtureFile('treelikeConfigs/plainDiff.txt');
+  expect(render(bigTreelikeAST, 'plain')).toBe(expectedResult);
 });
