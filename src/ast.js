@@ -27,10 +27,9 @@ const nodeTypes = {
 };
 
 const parse = (firstConfig, secondConfig) => {
-  const allUniqNames = _.flatten([Object.keys(firstConfig), Object.keys(secondConfig)])
-    .filter((value, index, self) => self.indexOf(value) === index);
+  const allUniqueNames = _.union(_.keys(firstConfig), _.keys(secondConfig));
 
-  return _.reduce(allUniqNames, (acc, nodeName) => {
+  return _.reduce(allUniqueNames, (acc, nodeName) => {
     const oldValue = firstConfig[nodeName];
     const newValue = secondConfig[nodeName];
     const type = getNodeType(oldValue, newValue);
