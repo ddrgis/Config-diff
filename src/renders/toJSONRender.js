@@ -1,9 +1,12 @@
+const buildJSONNode = ({ name, type }, values) => ({ [name]: { was: type, ...values } });
+
 const nodeTypes = {
   internalNode: ({ name, children }, toJSONFunc) => ({ [name]: toJSONFunc(children) }),
-  deleted: ({ oldValue, ...node }) => ({ [node.name]: { was: node.type, oldValue } }),
-  added: ({ newValue, ...node }) => ({ [node.name]: { was: node.type, newValue } }),
-  notChanged: ({ newValue, ...node }) => ({ [node.name]: { was: node.type, value: newValue } }),
-  changed: node => ({ [node.name]: { was: node.type, from: node.oldValue, to: node.newValue } }),
+  deleted: ({ oldValue, ...node }) => buildJSONNode(node, { oldValue }),
+  added: ({ newValue, ...node }) => buildJSONNode(node, { newValue }),
+  notChanged: ({ newValue, ...node }) => buildJSONNode(node, { value: newValue }),
+  changed: ({ oldValue, newValue, ...node }) =>
+    buildJSONNode(node, { from: oldValue, to: newValue }),
 };
 
 const toJSON = (ast) => {
