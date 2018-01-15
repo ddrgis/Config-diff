@@ -1,7 +1,11 @@
+import fs from 'fs';
+import path from 'path';
 import { getPathToFixtures } from './utils/utils';
 import parseAST from '../src/ast';
 import parseConfig from '../src/parser';
 import { bigTreelikeAST, flatAST } from './utils/testData';
+
+const readFile = pathToFile => fs.readFileSync(path.resolve(process.env.PWD, pathToFile), 'utf-8');
 
 test('flat AST parsing', () => {
   const firstConfig = { host: 'hexlet.io', timeout: 50, proxy: '123.234.53.22' };
@@ -26,29 +30,29 @@ const simpleTreelikeAST = [
 ];
 
 test('simple treelike AST parsing (group1) from json', () => {
-  const firstConfig = parseConfig(getPathToFixtures('treelikeConfigs/group1Before.json'));
-  const secondConfig = parseConfig(getPathToFixtures('treelikeConfigs/group1After.json'));
+  const firstConfig = parseConfig(readFile(getPathToFixtures('treelikeConfigs/group1Before.json')));
+  const secondConfig = parseConfig(readFile(getPathToFixtures('treelikeConfigs/group1After.json')));
 
   expect(parseAST(firstConfig, secondConfig)).toEqual(simpleTreelikeAST);
 });
 
 test('treelike ast parsing from json', () => {
-  const firstConfig = parseConfig(getPathToFixtures('treelikeConfigs/before.json'));
-  const secondConfig = parseConfig(getPathToFixtures('treelikeConfigs/after.json'));
+  const firstConfig = parseConfig(readFile(getPathToFixtures('treelikeConfigs/before.json')));
+  const secondConfig = parseConfig(readFile(getPathToFixtures('treelikeConfigs/after.json')));
 
   expect(parseAST(firstConfig, secondConfig)).toEqual(bigTreelikeAST);
 });
 
 test('treelike ast parsing from yaml', () => {
-  const firstConfig = parseConfig(getPathToFixtures('treelikeConfigs/before.yaml'));
-  const secondConfig = parseConfig(getPathToFixtures('treelikeConfigs/after.yaml'));
+  const firstConfig = parseConfig(readFile(getPathToFixtures('treelikeConfigs/before.yaml')), 'yaml');
+  const secondConfig = parseConfig(readFile(getPathToFixtures('treelikeConfigs/after.yaml')), 'yaml');
 
   expect(parseAST(firstConfig, secondConfig)).toEqual(bigTreelikeAST);
 });
 
 test('treelike ast parsing from ini', () => {
-  const firstConfig = parseConfig(getPathToFixtures('treelikeConfigs/before.ini'));
-  const secondConfig = parseConfig(getPathToFixtures('treelikeConfigs/after.ini'));
+  const firstConfig = parseConfig(readFile(getPathToFixtures('treelikeConfigs/before.ini')), 'ini');
+  const secondConfig = parseConfig(readFile(getPathToFixtures('treelikeConfigs/after.ini')), 'ini');
 
   expect(parseAST(firstConfig, secondConfig)).toEqual(bigTreelikeAST);
 });

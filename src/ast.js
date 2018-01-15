@@ -16,23 +16,14 @@ const getNodeType = (previousValue, newValue) => {
   return 'changed';
 };
 
+// тут получше имя не придумал...
 const nodeTypes = {
-  internalNode: {
-    getNodeProps: (previousValue, newValue, parseSubtree) =>
-      ({ children: parseSubtree(previousValue, newValue) }),
-  },
-  deleted: {
-    getNodeProps: previousValue => ({ previousValue }),
-  },
-  added: {
-    getNodeProps: (previousValue, newValue) => ({ newValue }),
-  },
-  notChanged: {
-    getNodeProps: (previousValue, newValue) => ({ newValue }),
-  },
-  changed: {
-    getNodeProps: (previousValue, newValue) => ({ newValue, previousValue }),
-  },
+  internalNode: (previousValue, newValue, parseSubtree) =>
+    ({ children: parseSubtree(previousValue, newValue) }),
+  deleted: previousValue => ({ previousValue }),
+  added: (previousValue, newValue) => ({ newValue }),
+  notChanged: (previousValue, newValue) => ({ newValue }),
+  changed: (previousValue, newValue) => ({ newValue, previousValue }),
 };
 
 const parse = (firstConfig, secondConfig) => {
@@ -43,7 +34,7 @@ const parse = (firstConfig, secondConfig) => {
     const previousValue = firstConfig[nodeName];
     const newValue = secondConfig[nodeName];
     const type = getNodeType(previousValue, newValue);
-    const nodeProps = nodeTypes[type].getNodeProps(previousValue, newValue, parse);
+    const nodeProps = nodeTypes[type](previousValue, newValue, parse);
     return [...acc, { name: nodeName, type, ...nodeProps }];
   }, []);
 };

@@ -1,5 +1,9 @@
+import fs from 'fs';
+import path from 'path';
 import { getPathToFixtures } from './utils/utils';
 import parseConfigFile from '../src/parser';
+
+const readFile = pathToFile => fs.readFileSync(path.resolve(process.env.PWD, pathToFile), 'utf-8');
 
 test('parse flat config.json', () => {
   const expectedObject = {
@@ -8,5 +12,6 @@ test('parse flat config.json', () => {
     host: 'hexlet.io',
   };
 
-  expect(parseConfigFile(getPathToFixtures('flatConfigs/after.json'))).toEqual(expectedObject);
+  const data = readFile(getPathToFixtures('flatConfigs/after.json'));
+  expect(parseConfigFile(data)).toEqual(expectedObject);
 });

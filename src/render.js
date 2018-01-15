@@ -62,7 +62,6 @@ const toStringFormat = (ast, depth = 1) => {
 
 const toPlainText = (ast, parentName) => ast.reduce((acc, node) => {
   const { name, newValue, type } = node;
-  console.log(node);
   const fullName = parentName ? `${parentName}.${name}` : name;
   const complexValue = _.isObject(newValue) ? 'complex value' : newValue;
   return [...acc, nodeTypes[type].toPlainText({ ...node, fullName, complexValue }, toPlainText)];
