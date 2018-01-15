@@ -6,11 +6,11 @@ const getIndent = depth => (depth < 1 ? '' : '  '.repeat(depth));
 const nodeTypes = {
   internalNode: ({ name, children }, depth, toStringFunc) =>
     `${getIndent(depth + 1)}${name}: ${toStringFunc(children, depth + 2)}`,
-  deleted: ({ name, oldValue }, depth) => `${getIndent(depth)}- ${name}: ${oldValue}`,
-  added: ({ name, newValue }, depth) => `${getIndent(depth)}+ ${name}: ${newValue}`,
-  notChanged: ({ name, newValue }, depth) => `${getIndent(depth)}  ${name}: ${newValue}`,
-  changed: ({ name, newValue, oldValue }, depth) =>
-    `${getIndent(depth)}+ ${name}: ${newValue}\n${getIndent(depth)}- ${name}: ${oldValue}`,
+  deleted: (node, depth) => `${getIndent(depth)}- ${node.name}: ${node.oldValue}`,
+  added: (node, depth) => `${getIndent(depth)}+ ${node.name}: ${node.newValue}`,
+  notChanged: (node, depth) => `${getIndent(depth)}  ${node.name}: ${node.newValue}`,
+  changed: (node, depth) =>
+    `${getIndent(depth)}+ ${node.name}: ${node.newValue}\n${getIndent(depth)}- ${node.name}: ${node.oldValue}`,
 };
 
 const nodeObjectValueToString = (value, depth) => {
