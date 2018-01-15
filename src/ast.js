@@ -1,16 +1,16 @@
 import _ from 'lodash';
 
-const getNodeType = (previousValue, newValue) => {
-  if (_.isPlainObject(previousValue) && _.isPlainObject(newValue)) {
+const getNodeType = (oldValue, newValue) => {
+  if (_.isPlainObject(oldValue) && _.isPlainObject(newValue)) {
     return 'internalNode';
   }
   if (newValue === undefined) {
     return 'deleted';
   }
-  if (previousValue === undefined) {
+  if (oldValue === undefined) {
     return 'added';
   }
-  if (newValue === previousValue) {
+  if (newValue === oldValue) {
     return 'notChanged';
   }
   return 'changed';
@@ -18,12 +18,12 @@ const getNodeType = (previousValue, newValue) => {
 
 // тут получше имя не придумал...
 const nodeTypes = {
-  internalNode: (previousValue, newValue, parseSubtree) =>
-    ({ children: parseSubtree(previousValue, newValue) }),
-  deleted: previousValue => ({ previousValue }),
-  added: (previousValue, newValue) => ({ newValue }),
-  notChanged: (previousValue, newValue) => ({ newValue }),
-  changed: (previousValue, newValue) => ({ newValue, previousValue }),
+  internalNode: (oldValue, newValue, parseSubtree) =>
+    ({ children: parseSubtree(oldValue, newValue) }),
+  deleted: oldValue => ({ oldValue }),
+  added: (oldValue, newValue) => ({ newValue }),
+  notChanged: (oldValue, newValue) => ({ newValue }),
+  changed: (oldValue, newValue) => ({ newValue, oldValue }),
 };
 
 const parse = (firstConfig, secondConfig) => {
@@ -31,10 +31,10 @@ const parse = (firstConfig, secondConfig) => {
     .filter((value, index, self) => self.indexOf(value) === index);
 
   return _.reduce(allUniqNames, (acc, nodeName) => {
-    const previousValue = firstConfig[nodeName];
+    const oldValue = firstConfig[nodeName];
     const newValue = secondConfig[nodeName];
-    const type = getNodeType(previousValue, newValue);
-    const nodeProps = nodeTypes[type](previousValue, newValue, parse);
+    const type = getNodeType(oldValue, newValue);
+    const nodeProps = nodeTypes[type](oldValue, newValue, parse);
     return [...acc, { name: nodeName, type, ...nodeProps }];
   }, []);
 };

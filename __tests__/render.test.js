@@ -7,10 +7,10 @@ const flatAST = [
     name: 'host', type: 'notChanged', newValue: 'hexlet.io',
   },
   {
-    name: 'timeout', type: 'changed', newValue: 20, previousValue: 50,
+    name: 'timeout', type: 'changed', newValue: 20, oldValue: 50,
   },
   {
-    name: 'proxy', type: 'deleted', previousValue: '123.234.53.22',
+    name: 'proxy', type: 'deleted', oldValue: '123.234.53.22',
   },
   {
     name: 'verbose', type: 'added', newValue: true,

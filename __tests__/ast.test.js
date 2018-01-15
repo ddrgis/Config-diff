@@ -20,7 +20,7 @@ const simpleTreelikeAST = [
     type: 'internalNode',
     children: [
       {
-        name: 'baz', type: 'changed', newValue: 'bars', previousValue: 'bas',
+        name: 'baz', type: 'changed', newValue: 'bars', oldValue: 'bas',
       },
       {
         name: 'foo', type: 'notChanged', newValue: 'bar',

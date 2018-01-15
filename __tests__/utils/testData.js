@@ -3,10 +3,10 @@ export const flatAST = [
     name: 'host', type: 'notChanged', newValue: 'hexlet.io',
   },
   {
-    name: 'timeout', type: 'changed', newValue: 20, previousValue: 50,
+    name: 'timeout', type: 'changed', newValue: 20, oldValue: 50,
   },
   {
-    name: 'proxy', type: 'deleted', previousValue: '123.234.53.22',
+    name: 'proxy', type: 'deleted', oldValue: '123.234.53.22',
   },
   {
     name: 'verbose', type: 'added', newValue: true,
@@ -19,7 +19,7 @@ export const bigTreelikeAST = [
     type: 'internalNode',
     children: [
       { name: 'setting1', type: 'notChanged', newValue: 'Value 1' },
-      { name: 'setting2', type: 'deleted', previousValue: '200' },
+      { name: 'setting2', type: 'deleted', oldValue: '200' },
       { name: 'setting3', type: 'notChanged', newValue: true },
       {
         name: 'setting6',
@@ -43,7 +43,7 @@ export const bigTreelikeAST = [
         name: 'baz',
         type: 'changed',
         newValue: 'bars',
-        previousValue: 'bas',
+        oldValue: 'bas',
       },
       {
         name: 'foo',
@@ -55,7 +55,7 @@ export const bigTreelikeAST = [
   {
     name: 'group2',
     type: 'deleted',
-    previousValue: { abc: '12345' },
+    oldValue: { abc: '12345' },
   },
   {
     name: 'group3',

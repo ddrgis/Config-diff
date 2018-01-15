@@ -5,7 +5,7 @@
       "was": "notChanged"
     },
     "setting2": {
-      "previousValue": "200",
+      "oldValue": "200",
       "was": "deleted"
     },
     "setting3": {
@@ -45,7 +45,7 @@
     }
   },
   "group2": {
-    "previousValue": {
+    "oldValue": {
       "abc": "12345"
     },
     "was": "deleted"

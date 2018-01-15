@@ -20,9 +20,9 @@ const nodeTypes = {
     toJSON: ({ name, children }, toJSONFunc) => ({ [name]: toJSONFunc(children) }),
   },
   deleted: {
-    toStringFormat: ({ name, previousValue }, depth) => `${getIndent(depth)}- ${name}: ${previousValue}`,
+    toStringFormat: ({ name, oldValue }, depth) => `${getIndent(depth)}- ${name}: ${oldValue}`,
     toPlainText: ({ fullName }) => `Property '${fullName}' was removed`,
-    toJSON: ({ name, type, previousValue }) => ({ [name]: { was: type, previousValue } }),
+    toJSON: ({ name, type, oldValue }) => ({ [name]: { was: type, oldValue } }),
   },
   added: {
     toStringFormat: ({ name, newValue }, depth) => `${getIndent(depth)}+ ${name}: ${newValue}`,
@@ -36,26 +36,26 @@ const nodeTypes = {
     toJSON: ({ name, type, newValue }) => ({ [name]: { was: type, value: newValue } }),
   },
   changed: {
-    toStringFormat: ({ name, newValue, previousValue }, depth) =>
-      `${getIndent(depth)}+ ${name}: ${newValue}\n${getIndent(depth)}- ${name}: ${previousValue}`,
-    toPlainText: ({ fullName, previousValue, newValue }) =>
-      `Property '${fullName}' was updated. From '${previousValue}' to '${newValue}'`,
+    toStringFormat: ({ name, newValue, oldValue }, depth) =>
+      `${getIndent(depth)}+ ${name}: ${newValue}\n${getIndent(depth)}- ${name}: ${oldValue}`,
+    toPlainText: ({ fullName, oldValue, newValue }) =>
+      `Property '${fullName}' was updated. From '${oldValue}' to '${newValue}'`,
     toJSON: ({
-      name, type, previousValue, newValue,
-    }) => ({ [name]: { was: type, from: previousValue, to: newValue } }),
+      name, type, oldValue, newValue,
+    }) => ({ [name]: { was: type, from: oldValue, to: newValue } }),
   },
 };
 
 const toStringFormat = (ast, depth = 1) => {
   const nodes = ast.map((node) => {
-    const previousValue = _.isObject(node.previousValue) ?
-      nodeObjectValueToString(node.previousValue, depth + 1)
-      : node.previousValue;
+    const oldValue = _.isObject(node.oldValue) ?
+      nodeObjectValueToString(node.oldValue, depth + 1)
+      : node.oldValue;
     const newValue = _.isObject(node.newValue) ?
       nodeObjectValueToString(node.newValue, depth + 1)
       : node.newValue;
     return nodeTypes[node.type]
-      .toStringFormat({ ...node, previousValue, newValue }, depth, toStringFormat);
+      .toStringFormat({ ...node, oldValue, newValue }, depth, toStringFormat);
   });
   return `{\n${nodes.join(lineSeparator).replace(/"/g, '')}\n${getIndent(depth - 1)}}`;
 };
