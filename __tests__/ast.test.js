@@ -7,13 +7,6 @@ import { bigTreelikeAST, flatAST } from './utils/testData';
 
 const readFile = pathToFile => fs.readFileSync(path.resolve(process.env.PWD, pathToFile), 'utf-8');
 
-test('flat AST parsing', () => {
-  const firstConfig = { host: 'hexlet.io', timeout: 50, proxy: '123.234.53.22' };
-  const secondConfig = { timeout: 20, verbose: true, host: 'hexlet.io' };
-
-  expect(parseAST(firstConfig, secondConfig)).toEqual(flatAST);
-});
-
 const simpleTreelikeAST = [
   {
     name: 'group1',
@@ -28,6 +21,13 @@ const simpleTreelikeAST = [
     ],
   },
 ];
+
+test('flat AST parsing from json', () => {
+  const firstConfig = { host: 'hexlet.io', timeout: 50, proxy: '123.234.53.22' };
+  const secondConfig = { timeout: 20, verbose: true, host: 'hexlet.io' };
+
+  expect(parseAST(firstConfig, secondConfig)).toEqual(flatAST);
+});
 
 test('simple treelike AST parsing (group1) from json', () => {
   const firstConfig = parseConfig(readFile(getPathToFixtures('treelikeConfigs/group1Before.json')));

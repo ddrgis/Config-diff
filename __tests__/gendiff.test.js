@@ -7,52 +7,52 @@ const testInit = inputFormat => ({
   resultDiff: readFixtureFile('flatConfigs/diff.txt'),
 });
 
-test('correct pathToFlatJson input returns corrent string diff', () => {
+test('pathes to flat JSON data input return corrent StringFormat diff', () => {
   const { firstConfigPath, secondConfigPath, resultDiff } = testInit('json');
 
   expect(genDiff(firstConfigPath, secondConfigPath)).toEqual(resultDiff);
 });
 
-test('correct pathToFlatYaml input returns corrent string diff', () => {
+test('pathes to flat Yaml data input return corrent StringFormat diff', () => {
   const { firstConfigPath, secondConfigPath, resultDiff } = testInit('yaml');
 
   expect(genDiff(firstConfigPath, secondConfigPath)).toEqual(resultDiff);
 });
 
-test('correct pathToFlatIni input returns corrent string diff', () => {
+test('pathes to flat JSON data input return corrent StringFormat diff', () => {
   const { firstConfigPath, secondConfigPath, resultDiff } = testInit('ini');
 
   expect(genDiff(firstConfigPath, secondConfigPath)).toEqual(resultDiff);
 });
 
-test('correct treelike JSON data input returns corrent string diff', () => {
-  const firstConfig = getPathToFixtures('treelikeConfigs/before.json');
-  const secondConfig = getPathToFixtures('treelikeConfigs/after.json');
+test('correct path to treelike JSON data input returns corrent StringFormat diff', () => {
+  const firstConfigPath = getPathToFixtures('treelikeConfigs/before.json');
+  const secondConfigPath = getPathToFixtures('treelikeConfigs/after.json');
   const resultDiff = readFixtureFile('treelikeConfigs/diff.txt');
 
-  expect(genDiff(firstConfig, secondConfig)).toEqual(resultDiff);
+  expect(genDiff(firstConfigPath, secondConfigPath)).toEqual(resultDiff);
 });
 
-test('correct treelike YAML data input returns corrent string diff', () => {
-  const firstConfig = getPathToFixtures('treelikeConfigs/before.yaml');
-  const secondConfig = getPathToFixtures('treelikeConfigs/after.yaml');
+test('correct path to treelike YAML data input returns corrent StringFormat diff', () => {
+  const firstConfigPath = getPathToFixtures('treelikeConfigs/before.yaml');
+  const secondConfigPath = getPathToFixtures('treelikeConfigs/after.yaml');
   const resultDiff = readFixtureFile('treelikeConfigs/diff.txt');
 
-  expect(genDiff(firstConfig, secondConfig)).toEqual(resultDiff);
+  expect(genDiff(firstConfigPath, secondConfigPath)).toEqual(resultDiff);
 });
 
-test('correct treelike INI data input returns corrent string diff', () => {
-  const firstConfig = getPathToFixtures('treelikeConfigs/before.ini');
-  const secondConfig = getPathToFixtures('treelikeConfigs/after.ini');
+test('correct path to reelike INI data input returns corrent StringFormat diff', () => {
+  const firstConfigPath = getPathToFixtures('treelikeConfigs/before.ini');
+  const secondConfigPath = getPathToFixtures('treelikeConfigs/after.ini');
   const resultDiff = readFixtureFile('treelikeConfigs/diff.txt');
 
-  expect(genDiff(firstConfig, secondConfig)).toEqual(resultDiff);
+  expect(genDiff(firstConfigPath, secondConfigPath)).toEqual(resultDiff);
 });
 
-test('correct treelike json data input returns corrent diff in json format', () => {
-  const firstConfig = getPathToFixtures('treelikeConfigs/before.json');
-  const secondConfig = getPathToFixtures('treelikeConfigs/after.json');
+test('correct path to treelike JSON data input returns corrent diff in JSON format', () => {
+  const firstConfigPath = getPathToFixtures('treelikeConfigs/before.json');
+  const secondConfigPath = getPathToFixtures('treelikeConfigs/after.json');
   const resultDiff = JSON.parse(readFixtureFile('treelikeConfigs/jsonDiff.json'));
 
-  expect(genDiff(firstConfig, secondConfig, 'json')).toEqual(resultDiff);
+  expect(genDiff(firstConfigPath, secondConfigPath, 'json')).toEqual(resultDiff);
 });

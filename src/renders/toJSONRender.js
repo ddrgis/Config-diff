@@ -1,6 +1,5 @@
 const nodeTypes = {
   internalNode: ({ name, children }, toJSONFunc) => ({ [name]: toJSONFunc(children) }),
-
   deleted: ({ name, type, oldValue }) => ({ [name]: { was: type, oldValue } }),
   added: ({ name, type, newValue }) => ({ [name]: { was: type, newValue } }),
   notChanged: ({ name, type, newValue }) => ({ [name]: { was: type, value: newValue } }),
