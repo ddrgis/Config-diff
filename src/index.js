@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import buildAST from './ast';
 import parse from './parser';
-import astToString from './render';
+import astToString from './renders/';
 
 const genDiffFromData = (firstConfigData, secondConfigData, outputFormat = 'string') => {
   const diffAST = buildAST(firstConfigData, secondConfigData);

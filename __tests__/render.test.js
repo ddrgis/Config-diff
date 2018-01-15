@@ -1,5 +1,5 @@
 import { readFixtureFile } from './utils/utils';
-import render from '../src/render';
+import render from '../src/renders/';
 import { bigTreelikeAST } from './utils/testData';
 
 const flatAST = [
