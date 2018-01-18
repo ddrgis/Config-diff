@@ -1,5 +1,6 @@
 import genDiff from '../src/';
 import { getPathToFixtures, readFixtureFile } from './utils/utils';
+import { bigTreelikeAST } from './utils/testData';
 
 const testInit = inputFormat => ({
   firstConfigPath: getPathToFixtures(`flatConfigs/before.${inputFormat}`),
@@ -52,7 +53,7 @@ test('correct path to reelike INI data input returns corrent StringFormat diff',
 test('correct path to treelike JSON data input returns corrent diff in JSON format', () => {
   const firstConfigPath = getPathToFixtures('treelikeConfigs/before.json');
   const secondConfigPath = getPathToFixtures('treelikeConfigs/after.json');
-  const resultDiff = JSON.parse(readFixtureFile('treelikeConfigs/jsonDiff.json'));
+  const resultDiff = bigTreelikeAST;
 
   expect(genDiff(firstConfigPath, secondConfigPath, 'json')).toEqual(resultDiff);
 });
